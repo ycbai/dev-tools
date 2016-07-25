@@ -45,18 +45,18 @@
             </command>
          </menu>
       </menuContribution>
-      <menuContribution
+      <!--<menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
          <toolbar
                id="com.byc.tools.patch.toolbars.devToolsToolbar">
             <command
                   commandId="com.byc.tools.patch.commands.MakePatchCommand"
                   icon="icons/sample.gif"
-                  tooltip="Say hello world"
+                  tooltip="Make patch"
                   id="com.byc.tools.patch.toolbars.MakePatchCommand">
             </command>
          </toolbar>
-      </menuContribution>
+      </menuContribution>-->
    </extension>
 
 </plugin>

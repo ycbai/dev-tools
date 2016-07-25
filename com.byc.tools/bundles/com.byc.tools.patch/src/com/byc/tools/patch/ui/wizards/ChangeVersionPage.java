@@ -1,28 +1,36 @@
 package com.byc.tools.patch.ui.wizards;
 
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.byc.tools.patch.model.PatchInfo;
+
 /**
  * 
  * @author ycbai
  *
  */
-public class ChangeVersionPage extends WizardPage {
-	
-	private Text dataPathText;
+public class ChangeVersionPage extends AbstractMakePatchPage {
+
+	private Text patchPathText;
+
+	private Button pathButton;
 
 	private Text versionText;
 
 	private Composite container;
 
-	public ChangeVersionPage() {
-		super("Change Version Page");
+	public ChangeVersionPage(PatchInfo patchInfo) {
+		super("Change Version Page", patchInfo);
 		setTitle("Change Version");
 		setDescription("Please fill the version info.");
 	}
@@ -33,37 +41,62 @@ public class ChangeVersionPage extends WizardPage {
 		GridLayout layout = new GridLayout();
 		container.setLayout(layout);
 		layout.numColumns = 3;
-		
+
 		Label dataPathLabel = new Label(container, SWT.NONE);
-		dataPathLabel.setText("Plugins Path");
-		
-		dataPathText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		
-		Button pathButton = new Button(container, SWT.PUSH);
+		dataPathLabel.setText("Patch Path");
+
+		patchPathText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		patchPathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		pathButton = new Button(container, SWT.PUSH);
 		pathButton.setText("Browse...");
-		
+
 		Label versionLabel = new Label(container, SWT.NONE);
 		versionLabel.setText("Target Version");
 
 		versionText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		
-		// required to avoid an error in the system
+		versionText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		addListeners();
+		updatePageStatus();
+
 		setControl(container);
 		setPageComplete(false);
 	}
+
+	private void addListeners() {
+		patchPathText.addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				patchInfo.setPath(patchPathText.getText());
+				updatePageStatus();
+			}
+		});
+		pathButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				//TODO: open the file dialog.
+			}
+		});
+		versionText.addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				patchInfo.setVersion(versionText.getText());
+				updatePageStatus();
+			}
+		});
+	}
 	
-	public String getDataPath() {
-		if (dataPathText != null && !dataPathText.isDisposed()) {
-			return dataPathText.getText();
+	private void updatePageStatus() {
+		boolean isOK = true;
+		if ("".equals(patchPathText.getText())) {
+			isOK = false;
+		} else if ("".equals(versionText.getText())) {
+			isOK = false;
 		}
-		return "";
+		setPageComplete(isOK);
 	}
 
-	public String getVersion() {
-		if (versionText != null && !versionText.isDisposed()) {
-			return versionText.getText();
-		}
-		return "";
-	}
-	
 }

@@ -1,5 +1,7 @@
 package com.byc.tools.patch.services;
 
+import com.byc.tools.patch.model.PatchInfo;
+
 /**
  * 
  * @author ycbai
@@ -7,6 +9,6 @@ package com.byc.tools.patch.services;
  */
 public interface ChangeVersionService {
 
-	boolean doChangeVersion(String newVersion);
+	boolean doChangeVersion(PatchInfo patchInfo);
 
 }

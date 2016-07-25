@@ -2,6 +2,7 @@ package com.byc.tools.patch.ui.wizards;
 
 import org.eclipse.jface.wizard.Wizard;
 
+import com.byc.tools.patch.model.PatchInfo;
 import com.byc.tools.patch.services.ChangeVersionService;
 import com.byc.tools.patch.services.impls.ChangeVersionServiceImpl;
 
@@ -12,10 +13,11 @@ import com.byc.tools.patch.services.impls.ChangeVersionServiceImpl;
  */
 public class MakePatchWizard extends Wizard {
 
-	protected ChangeVersionPage changeVersionPage;
+	private PatchInfo patchInfo;
 
 	public MakePatchWizard() {
 		super();
+		patchInfo = new PatchInfo();
 		setNeedsProgressMonitor(true);
 	}
 
@@ -26,16 +28,14 @@ public class MakePatchWizard extends Wizard {
 
 	@Override
 	public void addPages() {
-		changeVersionPage = new ChangeVersionPage();
+		ChangeVersionPage changeVersionPage = new ChangeVersionPage(patchInfo);
 		addPage(changeVersionPage);
 	}
 
 	@Override
 	public boolean performFinish() {
-		String newVersion = changeVersionPage.getVersion();
 		ChangeVersionService service = new ChangeVersionServiceImpl();
-		service.doChangeVersion(newVersion);
-		return true;
+		return service.doChangeVersion(patchInfo);
 	}
 
 }
