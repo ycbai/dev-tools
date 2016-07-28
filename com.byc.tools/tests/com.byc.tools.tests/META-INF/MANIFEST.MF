@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Tools Tests
-Bundle-SymbolicName: com.byc.tools.patch.tests
-Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: BYC
-Fragment-Host: com.byc.tools.patch;bundle-version="1.0.0"
-Require-Bundle: org.junit

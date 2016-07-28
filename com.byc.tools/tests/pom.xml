@@ -13,6 +13,6 @@
 	</parent>
 
 	<modules>
-		<module>com.byc.tools.patch.tests</module>
+		<module>com.byc.tools.patch.test</module>
 	</modules>
 </project>
