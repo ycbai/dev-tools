@@ -28,10 +28,10 @@ public class ChangeVersionServiceImpl implements ChangeVersionService {
 		});
 		for (int i = 0; i < jarFiles.length; i++) {
 			File jarFile = jarFiles[i];
-			PatchFileUtil.changePatchName(jarFile, version);
-			PatchFileUtil.changePatchVersion(jarFile, version);
+			File newPatchFile = PatchFileUtil.changePatchName(jarFile, version);
+			PatchFileUtil.changePatchVersion(newPatchFile, version);
 		}
-		return false;
+		return true;
 	}
 	
 }

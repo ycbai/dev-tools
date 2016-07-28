@@ -1,13 +1,13 @@
 package com.byc.tools.patch.utils;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.osgi.util.ManifestElement;
-import org.osgi.framework.BundleException;
+import org.apache.commons.io.FileUtils;
 import org.osgi.framework.Constants;
-
-import com.byc.tools.patch.PatchPlugin;
 
 /**
  * 
@@ -19,30 +19,53 @@ public class PatchFileUtil {
 	public static final String VERSION_SEP = "_";
 
 	public static String getPatchVersion(String patchName) {
-		return patchName.substring(patchName.indexOf(VERSION_SEP) + 1);
+		return patchName.substring(patchName.indexOf(VERSION_SEP) + 1, patchName.lastIndexOf("."));
 	}
 
-	public static boolean changePatchName(File patchFile, String newVersion) {
+	public static File changePatchName(File patchFile, String newVersion) {
 		String oldName = patchFile.getName();
 		String oldVersion = getPatchVersion(oldName);
 		String newName = oldName.replace(oldVersion, newVersion);
 		File newPatchFile = new File(patchFile.getParentFile(), newName);
-		return patchFile.renameTo(newPatchFile);
+		patchFile.renameTo(newPatchFile);
+		return newPatchFile;
 	}
 
 	public static boolean changePatchVersion(File patchFile, String newVersion) {
-		String requireBundle = (String) Platform.getBundle(PatchPlugin.PLUGIN_ID).getHeaders()
-				.get(Constants.REQUIRE_BUNDLE);
+		String patchPath = patchFile.getAbsolutePath();
 		try {
-			ManifestElement[] elements = ManifestElement.parseHeader(Constants.BUNDLE_CLASSPATH, requireBundle);
-			for (ManifestElement manifestElement : elements) {
-				System.out.println(manifestElement.getValue());
-				manifestElement.getAttribute(Constants.BUNDLE_VERSION);
+			JarFile jarFile = new JarFile(patchFile);
+			Manifest manifest = jarFile.getManifest();
+			Attributes mainAttributes = manifest.getMainAttributes();
+			mainAttributes.putValue(Constants.BUNDLE_VERSION, newVersion);
+
+			File targetFolder = new File(getTmpFolder(), patchFile.getName().replace(".", "_"));
+			if (targetFolder.exists()) {
+				FileUtils.deleteDirectory(targetFolder);
 			}
-		} catch (BundleException e) {
+			Compressor.unzip(patchFile, targetFolder);
+			patchFile.delete();
+
+			File targetManifest = new File(targetFolder + "/META-INF/MANIFEST.MF");
+			if (targetManifest.isFile() && targetManifest.exists()) {
+				FileOutputStream fstream = new FileOutputStream(targetManifest);
+				manifest.write(fstream);
+			}
+
+			Compressor.zip(targetFolder.getAbsolutePath(), patchPath, true);
+			FileUtils.deleteDirectory(targetFolder);
+
+			jarFile.close();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		return true;
+	}
+
+	private static File getTmpFolder() {
+		File tmpFolder = new File(System.getProperty("java.io.tmpdir"));
+		return tmpFolder;
 	}
 
 }

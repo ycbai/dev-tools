@@ -9,3 +9,5 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.apache.commons.io
 Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: lib/zip4j_1.3.2.jar,
+ .
