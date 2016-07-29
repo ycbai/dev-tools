@@ -1,5 +1,7 @@
 package com.byc.tools.patch.services;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import com.byc.tools.patch.model.PatchInfo;
 
 /**
@@ -9,6 +11,6 @@ import com.byc.tools.patch.model.PatchInfo;
  */
 public interface ChangeVersionService {
 
-	boolean doChangeVersion(PatchInfo patchInfo);
+	boolean doChangeVersion(PatchInfo patchInfo, IProgressMonitor monitor);
 
 }

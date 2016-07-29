@@ -2,10 +2,8 @@ package com.byc.tools.tests;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.security.AccessController;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
-import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
 import org.apache.commons.io.FileUtils;
@@ -13,8 +11,6 @@ import org.junit.Test;
 import org.osgi.framework.Constants;
 
 import com.byc.tools.patch.utils.Compressor;
-
-import sun.security.action.GetPropertyAction;
 
 public class ExampleTest {
 

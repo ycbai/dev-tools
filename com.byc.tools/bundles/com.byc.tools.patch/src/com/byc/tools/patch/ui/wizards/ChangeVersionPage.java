@@ -1,5 +1,6 @@
 package com.byc.tools.patch.ui.wizards;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -9,6 +10,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -76,7 +78,11 @@ public class ChangeVersionPage extends AbstractMakePatchPage {
 		pathButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				//TODO: open the file dialog.
+				DirectoryDialog dial = new DirectoryDialog(getShell(), SWT.NONE);
+				String directory = dial.open();
+				if (StringUtils.isNotEmpty(directory)) {
+					patchPathText.setText(directory);
+				}
 			}
 		});
 		versionText.addModifyListener(new ModifyListener() {

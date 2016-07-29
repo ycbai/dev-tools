@@ -1,5 +1,9 @@
 package com.byc.tools.patch.ui.wizards;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 
 import com.byc.tools.patch.model.PatchInfo;
@@ -34,8 +38,25 @@ public class MakePatchWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
-		ChangeVersionService service = new ChangeVersionServiceImpl();
-		return service.doChangeVersion(patchInfo);
+		try {
+			this.getContainer().run(true, true, new IRunnableWithProgress() {
+
+				@Override
+				public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+					monitor.beginTask("Making patch...", 1000);
+					try {
+						ChangeVersionService service = new ChangeVersionServiceImpl();
+						service.doChangeVersion(patchInfo, monitor);
+					} finally {
+						monitor.done();
+					}
+				}
+
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 
 }

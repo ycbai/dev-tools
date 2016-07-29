@@ -7,7 +7,9 @@ Bundle-Activator: com.byc.tools.patch.PatchPlugin
 Bundle-Vendor: BYC
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.apache.commons.io
+ org.apache.commons.io,
+ org.apache.commons.lang3
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/zip4j_1.3.2.jar,
  .
+Export-Package: com.byc.tools.patch.utils
