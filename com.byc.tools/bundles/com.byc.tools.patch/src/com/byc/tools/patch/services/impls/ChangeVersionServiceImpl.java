@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 
+import com.byc.tools.patch.exceptions.PatchException;
 import com.byc.tools.patch.model.PatchInfo;
 import com.byc.tools.patch.services.ChangeVersionService;
 import com.byc.tools.patch.utils.PatchFileUtil;
@@ -18,7 +19,7 @@ import com.byc.tools.patch.utils.PatchFileUtil;
 public class ChangeVersionServiceImpl implements ChangeVersionService {
 
 	@Override
-	public boolean doChangeVersion(PatchInfo patchInfo, IProgressMonitor monitor) {
+	public boolean doChangeVersion(PatchInfo patchInfo, IProgressMonitor monitor) throws PatchException {
 		int taskCount = 900;
 		SubMonitor subMonitor = SubMonitor.convert(monitor, taskCount);
 		

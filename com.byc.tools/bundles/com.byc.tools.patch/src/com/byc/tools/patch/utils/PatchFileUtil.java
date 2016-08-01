@@ -11,6 +11,8 @@ import java.util.jar.Manifest;
 import org.apache.commons.io.FileUtils;
 import org.osgi.framework.Constants;
 
+import com.byc.tools.patch.exceptions.PatchException;
+
 /**
  * 
  * @author ycbai
@@ -26,16 +28,21 @@ public class PatchFileUtil {
 		return patchName.substring(patchName.indexOf(VERSION_SEP) + 1, patchName.lastIndexOf(JAR_SUFFIX));
 	}
 
-	public static File changePatchName(File patchFile, String newVersion) {
-		String oldName = patchFile.getName();
-		String oldVersion = getPatchVersion(oldName);
-		String newName = oldName.replace(oldVersion, newVersion);
-		File newPatchFile = new File(patchFile.getParentFile(), newName);
-		patchFile.renameTo(newPatchFile);
+	public static File changePatchName(File patchFile, String newVersion) throws PatchException {
+		File newPatchFile = null;
+		try {
+			String oldName = patchFile.getName();
+			String oldVersion = getPatchVersion(oldName);
+			String newName = oldName.replace(oldVersion, newVersion);
+			newPatchFile = new File(patchFile.getParentFile(), newName);
+			patchFile.renameTo(newPatchFile);
+		} catch (Exception e) {
+			throw new PatchException(e);
+		}
 		return newPatchFile;
 	}
 
-	public static boolean changePatchVersion(File patchFile, String newVersion) {
+	public static boolean changePatchVersion(File patchFile, String newVersion) throws PatchException {
 		try {
 			File targetFolder = new File(getTmpFolder(), patchFile.getName().replace(".", "_"));
 			if (targetFolder.exists()) {
@@ -78,22 +85,26 @@ public class PatchFileUtil {
 			Compressor.zip(targetFolder.getAbsolutePath(), patchFile.getAbsolutePath(), true);
 			FileUtils.forceDelete(targetFolder);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new PatchException(e);
 		}
 		return true;
 	}
-	
-	public static List<File> getJarFiles(File file) {
+
+	public static List<File> getJarFiles(File file) throws PatchException {
 		List<File> jarFiles = new ArrayList<>();
-		if(file.isFile()) {
-			if (!jarFiles.contains(file) && file.getName().endsWith(JAR_SUFFIX)) {
-				jarFiles.add(file);
+		try {
+			if (file.isFile()) {
+				if (!jarFiles.contains(file) && file.getName().endsWith(JAR_SUFFIX)) {
+					jarFiles.add(file);
+				}
+			} else if (file.isDirectory()) {
+				File[] files = file.listFiles();
+				for (File file2 : files) {
+					jarFiles.addAll(getJarFiles(file2));
+				}
 			}
-		} else if (file.isDirectory()) {
-			File[] files = file.listFiles();
-            for (File file2 : files) {
-            	jarFiles.addAll(getJarFiles(file2));
-            }
+		} catch (Exception e) {
+			throw new PatchException(e);
 		}
 		return jarFiles;
 	}
