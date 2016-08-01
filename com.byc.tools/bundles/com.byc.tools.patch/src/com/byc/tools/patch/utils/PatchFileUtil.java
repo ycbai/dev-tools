@@ -3,10 +3,15 @@ package com.byc.tools.patch.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.osgi.framework.Constants;
@@ -23,6 +28,8 @@ public class PatchFileUtil {
 	public static final String JAR_SUFFIX = ".jar";
 
 	public static final String VERSION_SEP = "_";
+
+	public static final String PATCH_NAME_PATTERN = ".+_((\\d\\.){3}([\\d]+)(_patch)?)\\.jar";
 
 	public static String getPatchVersion(String patchName) {
 		return patchName.substring(patchName.indexOf(VERSION_SEP) + 1, patchName.lastIndexOf(JAR_SUFFIX));
@@ -112,6 +119,25 @@ public class PatchFileUtil {
 	public static File getTmpFolder() {
 		File tmpFolder = new File(System.getProperty("java.io.tmpdir"));
 		return tmpFolder;
+	}
+
+	public static String getPatchDefaultVersion(String patchFileName) {
+		String newVersion = null;
+		try {
+			Pattern pattern = Pattern.compile(PATCH_NAME_PATTERN);
+			Matcher matcher = pattern.matcher(patchFileName);
+			if (matcher.matches()) {
+				String orignalPatchVersion = matcher.group(1);
+				String time = matcher.group(3);
+				DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+				Calendar cal = Calendar.getInstance();
+				String currentTime = dateFormat.format(cal.getTime());
+				newVersion = orignalPatchVersion.replace(time, currentTime);
+			}
+		} catch (Exception e) {
+			// Ignore it.
+		}
+		return newVersion;
 	}
 
 }

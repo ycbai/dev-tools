@@ -1,5 +1,8 @@
 package com.byc.tools.patch.ui.wizards;
 
+import java.io.File;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -14,7 +17,9 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import com.byc.tools.patch.exceptions.PatchException;
 import com.byc.tools.patch.model.PatchInfo;
+import com.byc.tools.patch.utils.PatchFileUtil;
 
 /**
  * 
@@ -82,6 +87,10 @@ public class ChangeVersionPage extends AbstractMakePatchPage {
 				String directory = dial.open();
 				if (StringUtils.isNotEmpty(directory)) {
 					patchPathText.setText(directory);
+					String defaultVersion = getDefaultVersion(directory);
+					if (defaultVersion != null) {
+						versionText.setText(defaultVersion);
+					}
 				}
 			}
 		});
@@ -94,7 +103,7 @@ public class ChangeVersionPage extends AbstractMakePatchPage {
 			}
 		});
 	}
-	
+
 	private void updatePageStatus() {
 		boolean isOK = true;
 		if ("".equals(patchPathText.getText())) {
@@ -103,6 +112,20 @@ public class ChangeVersionPage extends AbstractMakePatchPage {
 			isOK = false;
 		}
 		setPageComplete(isOK);
+	}
+
+	private String getDefaultVersion(String dirPath) {
+		String version = null;
+		try {
+			List<File> jarFiles = PatchFileUtil.getJarFiles(new File(dirPath));
+			if (jarFiles != null && jarFiles.size() > 0) {
+				File jarFile = jarFiles.get(0);
+				version = PatchFileUtil.getPatchDefaultVersion(jarFile.getName());
+			}
+		} catch (PatchException e) {
+			// Ignore it.
+		}
+		return version;
 	}
 
 }
