@@ -29,7 +29,7 @@ public class PatchFileUtil {
 
 	public static final String VERSION_SEP = "_";
 
-	public static final String PATCH_NAME_PATTERN = ".+_((\\d\\.){3}([\\d]+)(_patch)?)\\.jar";
+	public static final String PATCH_NAME_PATTERN = ".+_((\\d\\.){3}([\\d|_]+)(_patch)?)\\.jar";
 
 	public static String getPatchVersion(String patchName) {
 		return patchName.substring(patchName.indexOf(VERSION_SEP) + 1, patchName.lastIndexOf(JAR_SUFFIX));
@@ -129,7 +129,7 @@ public class PatchFileUtil {
 			if (matcher.matches()) {
 				String orignalPatchVersion = matcher.group(1);
 				String time = matcher.group(3);
-				DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+				DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmm");
 				Calendar cal = Calendar.getInstance();
 				String currentTime = dateFormat.format(cal.getTime());
 				newVersion = orignalPatchVersion.replace(time, currentTime);

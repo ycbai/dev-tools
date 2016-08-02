@@ -9,7 +9,7 @@ public class PatchTestUtil {
 	
 	public File getJarToTest(String newName) {
 		String fileName = newName;
-		File jarFileTemplate = new File("resources/com.byc.test.plugin_1.0.0.201607281736.jar");
+		File jarFileTemplate = new File("resources/com.byc.test.plugin_1.0.0.20160728_1736_patch.jar");
 		if (fileName == null) {
 			fileName = jarFileTemplate.getName();
 		}

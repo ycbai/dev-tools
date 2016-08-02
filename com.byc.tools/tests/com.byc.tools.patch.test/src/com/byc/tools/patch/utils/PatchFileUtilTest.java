@@ -12,12 +12,12 @@ public class PatchFileUtilTest {
 
 	@Test
 	public void testGetPatchDefaultVersion() {
-		String patchFileName = "com.byc.test.plugin_1.1.0.201607281736_patch.jar";
+		String patchFileName = "com.byc.test.plugin_1.0.0.20160728_1736_patch.jar";
 		String patchDefaultVersion = PatchFileUtil.getPatchDefaultVersion(patchFileName);
-		DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
+		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmm");
 		Calendar cal = Calendar.getInstance();
 		String currentTime = dateFormat.format(cal.getTime());
-		String expectVersion = "1.1.0." + currentTime + "_patch";
+		String expectVersion = "1.0.0." + currentTime + "_patch";
 		assertEquals(expectVersion, patchDefaultVersion);
 	}
 
