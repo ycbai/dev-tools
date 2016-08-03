@@ -5,12 +5,14 @@ import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 
+import com.byc.tools.patch.PatchPlugin;
 import com.byc.tools.patch.exceptions.ExceptionStatusUtils;
 import com.byc.tools.patch.log.ExceptionLogger;
 import com.byc.tools.patch.model.PatchInfo;
@@ -64,9 +66,10 @@ public class MakePatchWizard extends Wizard {
 			});
 		} catch (Exception e) {
 			ExceptionLogger.log(e);
-			MessageDialog.openError(getShell(), "Error", "Fail to make the patch. Please check logs to find the causes.");
-//			ErrorDialog.openError(getShell(), "Error", "Fail to make the patch. Please check logs to find the causes.",
-//					ExceptionStatusUtils.getStatus(e));
+			Status errorStatus = new Status(IStatus.ERROR, PatchPlugin.PLUGIN_ID, ExceptionUtils.getStackTrace(e));
+			MultiStatus multiErrorStatus = new MultiStatus(PatchPlugin.PLUGIN_ID, IStatus.ERROR,
+					new Status[] { errorStatus }, "Please check it in details.", e);
+			ErrorDialog.openError(getShell(), "Error", "Fail to make the patch.", multiErrorStatus);
 			return false;
 		}
 		return true;

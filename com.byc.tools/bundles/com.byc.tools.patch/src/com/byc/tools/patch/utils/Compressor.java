@@ -1,18 +1,21 @@
 package com.byc.tools.patch.utils;
 
 import java.io.File;
+
+import com.byc.tools.patch.exceptions.PatchException;
+
+import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
-import net.lingala.zip4j.core.ZipFile;
 
 public class Compressor {
 
-	public static void zip(File sourceFolder, File destinationFile, boolean isSkipRootFolder) {
+	public static void zip(File sourceFolder, File destinationFile, boolean isSkipRootFolder) throws PatchException {
 		zip(sourceFolder.getAbsolutePath(), destinationFile.getAbsolutePath(), isSkipRootFolder);
 	}
 
-	public static void zip(String sourceFolderPath, String destinationFilePath, boolean isSkipRootFolder) {
+	public static void zip(String sourceFolderPath, String destinationFilePath, boolean isSkipRootFolder) throws PatchException {
 		try {
 			ZipParameters parameters = new ZipParameters();
 			parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
@@ -29,7 +32,7 @@ public class Compressor {
 				addFileToZip(sourceFolder, parameters, zipFile);
 			}
 		} catch (ZipException e) {
-			e.printStackTrace();
+			throw new PatchException(e);
 		}
 	}
 
@@ -43,16 +46,16 @@ public class Compressor {
 		}
 	}
 
-	public static void unzip(File zipFile, File destinationFolder) {
+	public static void unzip(File zipFile, File destinationFolder) throws PatchException {
 		unzip(zipFile.getAbsolutePath(), destinationFolder.getAbsolutePath());
 	}
 
-	public static void unzip(String zipFilePath, String destinationFolderPath) {
+	public static void unzip(String zipFilePath, String destinationFolderPath) throws PatchException {
 		try {
 			ZipFile zipFile = new ZipFile(zipFilePath);
 			zipFile.extractAll(destinationFolderPath);
 		} catch (ZipException e) {
-			e.printStackTrace();
+			throw new PatchException(e);
 		}
 	}
 

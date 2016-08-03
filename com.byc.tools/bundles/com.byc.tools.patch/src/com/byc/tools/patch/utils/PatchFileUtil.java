@@ -90,7 +90,7 @@ public class PatchFileUtil {
 				}
 			}
 			Compressor.zip(targetFolder.getAbsolutePath(), patchFile.getAbsolutePath(), true);
-			FileUtils.forceDelete(targetFolder);
+			FileUtils.forceDeleteOnExit(targetFolder);
 		} catch (Exception e) {
 			throw new PatchException(e);
 		}

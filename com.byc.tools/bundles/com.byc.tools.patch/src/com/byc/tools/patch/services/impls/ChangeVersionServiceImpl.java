@@ -22,13 +22,16 @@ public class ChangeVersionServiceImpl implements ChangeVersionService {
 	public boolean doChangeVersion(PatchInfo patchInfo, IProgressMonitor monitor) throws PatchException {
 		int taskCount = 900;
 		SubMonitor subMonitor = SubMonitor.convert(monitor, taskCount);
-		
+
 		String path = patchInfo.getPath();
 		String version = patchInfo.getVersion();
 		File patchDir = new File(path);
 
 		List<File> jarFiles = PatchFileUtil.getJarFiles(patchDir);
-		int unitWeight = taskCount/jarFiles.size();
+		if (jarFiles.size() == 0) {
+			throw new PatchException("There is not any patch file in " + path);
+		}
+		int unitWeight = taskCount / jarFiles.size();
 		for (int i = 0; i < jarFiles.size(); i++) {
 			File jarFile = jarFiles.get(i);
 			subMonitor.setTaskName("Change version of " + jarFile.getName() + " to " + version);
