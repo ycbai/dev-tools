@@ -1,15 +1,14 @@
 package com.byc.tools.patch.utils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,34 +59,7 @@ public class PatchFileUtil {
 
 			File targetManifest = new File(targetFolder + "/META-INF/MANIFEST.MF");
 			if (targetManifest.isFile() && targetManifest.exists()) {
-				Manifest manifest;
-				FileInputStream manifestInputStream = null;
-				try {
-					manifestInputStream = new FileInputStream(targetManifest);
-					manifest = new Manifest(manifestInputStream);
-				} catch (Exception e) {
-					// Should has BOM, need to remove it.
-					String content = FileUtils.readFileToString(targetManifest, "ISO8859_1");
-					content = content.substring(3);
-					FileUtils.write(targetManifest, content, "UTF-8");
-					manifestInputStream = new FileInputStream(targetManifest);
-					manifest = new Manifest(manifestInputStream);
-				} finally {
-					if (manifestInputStream != null) {
-						manifestInputStream.close();
-					}
-				}
-				FileOutputStream manifestOutputStream = null;
-				try {
-					Attributes mainAttributes = manifest.getMainAttributes();
-					mainAttributes.putValue(Constants.BUNDLE_VERSION, newVersion);
-					manifestOutputStream = new FileOutputStream(targetManifest);
-					manifest.write(manifestOutputStream);
-				} finally {
-					if (manifestOutputStream != null) {
-						manifestOutputStream.close();
-					}
-				}
+				replaceVersion(targetManifest, newVersion);
 			}
 			Compressor.zip(targetFolder.getAbsolutePath(), patchFile.getAbsolutePath(), true);
 			FileUtils.forceDeleteOnExit(targetFolder);
@@ -95,6 +67,22 @@ public class PatchFileUtil {
 			throw new PatchException(e);
 		}
 		return true;
+	}
+
+	private static void replaceVersion(File manifestFile, String version) throws PatchException {
+		try {
+			List<String> newLines = new ArrayList<>();
+			for (String line : Files.readAllLines(Paths.get(manifestFile.toURI()), StandardCharsets.UTF_8)) {
+				if (line.contains(Constants.BUNDLE_VERSION)) {
+					newLines.add(Constants.BUNDLE_VERSION + ": " + version);
+				} else {
+					newLines.add(line);
+				}
+			}
+			Files.write(Paths.get(manifestFile.toURI()), newLines, StandardCharsets.UTF_8);
+		} catch (Exception e) {
+			throw new PatchException(e);
+		}
 	}
 
 	public static List<File> getJarFiles(File file) throws PatchException {
