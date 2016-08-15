@@ -5,5 +5,6 @@ Bundle-SymbolicName: com.byc.tools.patch.test
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: BYC
 Fragment-Host: com.byc.tools.patch
-Require-Bundle: org.junit
+Require-Bundle: org.junit,
+ org.apache.commons.codec
 Import-Package: com.byc.tools.patch.utils

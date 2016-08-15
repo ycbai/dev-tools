@@ -54,14 +54,14 @@ public class PatchFileUtil {
 			if (targetFolder.exists()) {
 				FileUtils.deleteDirectory(targetFolder);
 			}
-			Compressor.unzip(patchFile, targetFolder);
+			ZipFileUtil.unZip(patchFile, targetFolder.getAbsolutePath());
 			patchFile.delete();
 
 			File targetManifest = new File(targetFolder + "/META-INF/MANIFEST.MF");
 			if (targetManifest.isFile() && targetManifest.exists()) {
 				replaceVersion(targetManifest, newVersion);
 			}
-			Compressor.zip(targetFolder.getAbsolutePath(), patchFile.getAbsolutePath(), true);
+			ZipFileUtil.zip(targetFolder.getAbsolutePath(), patchFile.getAbsolutePath());
 			FileUtils.forceDeleteOnExit(targetFolder);
 		} catch (Exception e) {
 			throw new PatchException(e);

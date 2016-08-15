@@ -11,6 +11,5 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.lang3,
  org.apache.log4j
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: lib/zip4j_1.3.2.jar,
- .
+Bundle-ClassPath: .
 Export-Package: com.byc.tools.patch.utils
