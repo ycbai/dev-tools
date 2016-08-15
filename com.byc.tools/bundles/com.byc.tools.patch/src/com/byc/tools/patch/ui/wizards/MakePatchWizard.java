@@ -8,14 +8,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 
 import com.byc.tools.patch.PatchPlugin;
-import com.byc.tools.patch.exceptions.ExceptionStatusUtils;
 import com.byc.tools.patch.log.ExceptionLogger;
 import com.byc.tools.patch.model.PatchInfo;
+import com.byc.tools.patch.publish.P2Publisher;
+import com.byc.tools.patch.publish.impls.FeaturesAndBundlesPublisher;
 import com.byc.tools.patch.services.ChangeVersionService;
 import com.byc.tools.patch.services.impls.ChangeVersionServiceImpl;
 
@@ -56,6 +56,9 @@ public class MakePatchWizard extends Wizard {
 					try {
 						ChangeVersionService service = new ChangeVersionServiceImpl();
 						service.doChangeVersion(patchInfo, monitor);
+						
+						P2Publisher publisher = new FeaturesAndBundlesPublisher();
+						publisher.publish();
 					} catch (Exception ex) {
 						throw new InvocationTargetException(ex);
 					} finally {

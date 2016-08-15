@@ -9,7 +9,13 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.apache.commons.io,
  org.apache.commons.lang3,
- org.apache.log4j
+ org.apache.log4j,
+ org.eclipse.equinox.p2.artifact.repository,
+ org.eclipse.equinox.p2.metadata.repository,
+ org.eclipse.equinox.p2.repository,
+ org.eclipse.equinox.p2.core,
+ org.eclipse.equinox.p2.publisher,
+ org.eclipse.equinox.p2.publisher.eclipse
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Export-Package: com.byc.tools.patch.utils
