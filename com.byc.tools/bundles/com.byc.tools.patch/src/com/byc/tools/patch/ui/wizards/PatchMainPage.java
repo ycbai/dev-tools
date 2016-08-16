@@ -1,7 +1,6 @@
 package com.byc.tools.patch.ui.wizards;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,17 +30,17 @@ import com.byc.tools.patch.utils.PatchFileUtil;
  */
 public class PatchMainPage extends AbstractMakePatchPage {
 
-	private Text patchPathText;
+	private Text pluginsPathText;
 
-	private Button sourcePathButton;
+	private Button pluginsPathButton;
 
-	private Button targetPathButton;
+	private Button patchPathButton;
 
-	private Button exportButton;
+	private Button exportPatchButton;
 
 	private Text versionText;
 
-	private Text targetPatchPathText;
+	private Text patchPathText;
 
 	private Composite container;
 
@@ -63,13 +62,13 @@ public class PatchMainPage extends AbstractMakePatchPage {
 		layout.numColumns = 3;
 
 		Label dataPathLabel = new Label(container, SWT.NONE);
-		dataPathLabel.setText("Patch Path");
+		dataPathLabel.setText("Plugins Path");
 
-		patchPathText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		patchPathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		pluginsPathText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		pluginsPathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-		sourcePathButton = new Button(container, SWT.PUSH);
-		sourcePathButton.setText("Browse...");
+		pluginsPathButton = new Button(container, SWT.PUSH);
+		pluginsPathButton.setText("Browse...");
 
 		Label versionLabel = new Label(container, SWT.NONE);
 		versionLabel.setText("Target Version");
@@ -79,24 +78,31 @@ public class PatchMainPage extends AbstractMakePatchPage {
 
 		new Label(container, SWT.NONE);
 
-		exportButton = new Button(container, SWT.CHECK);
-		exportButton.setText("Export");
+		exportPatchButton = new Button(container, SWT.CHECK);
+		exportPatchButton.setText("Export");
+		GridData exportPatchButtonGD = new GridData(GridData.FILL_HORIZONTAL);
+		exportPatchButtonGD.horizontalSpan = 3;
+		exportPatchButton.setLayoutData(exportPatchButtonGD);
 
 		exportComposite = new Composite(container, SWT.NONE);
 		GridLayout exportCompLayout = new GridLayout();
-		exportCompLayout.numColumns = 2;
+		exportCompLayout.numColumns = 3;
 		exportCompLayout.marginWidth = 0;
 		exportCompLayout.marginHeight = 0;
 		exportComposite.setLayout(exportCompLayout);
 		GridData exportCompGD = new GridData(GridData.FILL_HORIZONTAL);
-		exportCompGD.horizontalSpan = 2;
+		exportCompGD.horizontalSpan = 3;
 		exportComposite.setLayoutData(exportCompGD);
 		exportComposite.setVisible(false);
 
-		targetPatchPathText = new Text(exportComposite, SWT.BORDER | SWT.SINGLE);
-		targetPatchPathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		targetPathButton = new Button(exportComposite, SWT.PUSH);
-		targetPathButton.setText("Browse...");
+		Label patchPathLabel = new Label(exportComposite, SWT.NONE);
+		patchPathLabel.setText("Patch Path");
+
+		patchPathText = new Text(exportComposite, SWT.BORDER | SWT.SINGLE);
+		patchPathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		patchPathButton = new Button(exportComposite, SWT.PUSH);
+		patchPathButton.setText("Browse...");
 
 		addListeners();
 		updatePageStatus();
@@ -106,34 +112,22 @@ public class PatchMainPage extends AbstractMakePatchPage {
 	}
 
 	private void addListeners() {
-		patchPathText.addModifyListener(new ModifyListener() {
+		pluginsPathText.addModifyListener(new ModifyListener() {
 
 			@Override
 			public void modifyText(ModifyEvent e) {
+				updateJarFiles(pluginsPathText.getText());
 				updatePageStatus();
 			}
 		});
-		sourcePathButton.addSelectionListener(new SelectionAdapter() {
+		pluginsPathButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				DirectoryDialog dial = new DirectoryDialog(getShell(), SWT.NONE);
 				String directory = dial.open();
 				if (StringUtils.isNotEmpty(directory)) {
-					patchPathText.setText(directory);
-					List<File> jarFiles = new ArrayList<>();
-					try {
-						jarFiles = PatchFileUtil.getJarFiles(new File(directory));
-						if (jarFiles == null || jarFiles.isEmpty()) {
-							throw new PatchException("There is not any patch file in " + directory);
-						}
-					} catch (PatchException ex) {
-						ExceptionLogger.log(ex);
-					}
-					patchInfo.setJarFiles(jarFiles);
-					String defaultVersion = getDefaultVersion();
-					if (defaultVersion != null) {
-						versionText.setText(defaultVersion);
-					}
+					pluginsPathText.setText(directory);
+					// updateJarFiles(directory);
 				}
 			}
 		});
@@ -145,22 +139,23 @@ public class PatchMainPage extends AbstractMakePatchPage {
 				updatePageStatus();
 			}
 		});
-		exportButton.addSelectionListener(new SelectionAdapter() {
+		exportPatchButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				exportComposite.setVisible(exportButton.getSelection());
-				setDoExport(exportButton.getSelection());
-			}
-		});
-		targetPatchPathText.addModifyListener(new ModifyListener() {
-
-			@Override
-			public void modifyText(ModifyEvent e) {
-				patchInfo.setTargetPath(targetPatchPathText.getText());
+				exportComposite.setVisible(exportPatchButton.getSelection());
+				setDoExport(exportPatchButton.getSelection());
 				updatePageStatus();
 			}
 		});
-		targetPathButton.addSelectionListener(new SelectionAdapter() {
+		patchPathText.addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				patchInfo.setTargetPath(patchPathText.getText());
+				updatePageStatus();
+			}
+		});
+		patchPathButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				FileDialog fileDialog = new FileDialog(getShell(), SWT.SAVE);
@@ -168,20 +163,35 @@ public class PatchMainPage extends AbstractMakePatchPage {
 				fileDialog.setFilterExtensions(new String[] { ".zip" });
 				String path = fileDialog.open();
 				if (StringUtils.isNotEmpty(path)) {
-					targetPatchPathText.setText(path);
+					patchPathText.setText(path);
 				}
 			}
 		});
 	}
 
-	private void updatePageStatus() {
-		boolean isOK = true;
-		if ("".equals(patchPathText.getText())) {
-			isOK = false;
-		} else if ("".equals(versionText.getText())) {
-			isOK = false;
+	private void updateJarFiles(String pluginsPath) {
+		try {
+			List<File> jarFiles = PatchFileUtil.getJarFiles(new File(pluginsPath));
+			patchInfo.setJarFiles(jarFiles);
+			fillDefaultVersion();
+		} catch (PatchException ex) {
+			ExceptionLogger.log(ex);
 		}
-		setPageComplete(isOK);
+	}
+
+	private void updatePageStatus() {
+		setErrorMessage(null);
+		List<File> jarFiles = patchInfo.getJarFiles();
+		if (StringUtils.isBlank(pluginsPathText.getText())) {
+			setErrorMessage("Plugins Path cannot be null!");
+		} else if (jarFiles == null || jarFiles.isEmpty()) {
+			setErrorMessage("There is not any plugin in " + pluginsPathText.getText());
+		} else if (StringUtils.isBlank(versionText.getText())) {
+			setErrorMessage("Target version cannot be null!");
+		} else if (exportPatchButton.getSelection() && StringUtils.isBlank(patchPathText.getText())) {
+			setErrorMessage("Patch Path cannot be null!");
+		}
+		setPageComplete(getErrorMessage() == null);
 	}
 
 	private String getDefaultVersion() {
@@ -204,6 +214,13 @@ public class PatchMainPage extends AbstractMakePatchPage {
 
 	public void setDoExport(boolean doExport) {
 		this.doExport = doExport;
+	}
+
+	private void fillDefaultVersion() {
+		String defaultVersion = getDefaultVersion();
+		if (defaultVersion != null) {
+			versionText.setText(defaultVersion);
+		}
 	}
 
 }

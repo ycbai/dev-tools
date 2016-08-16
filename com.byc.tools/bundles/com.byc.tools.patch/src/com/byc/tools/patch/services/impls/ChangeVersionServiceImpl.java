@@ -28,7 +28,7 @@ public class ChangeVersionServiceImpl extends MakePatchServiceImpl implements Ch
 		int unitWeight = totalCount / jarFiles.size();
 		for (int i = 0; i < jarFiles.size(); i++) {
 			File jarFile = jarFiles.get(i);
-			subMonitor.setTaskName("Change version of " + jarFile.getName() + " to " + version);
+			subMonitor.setTaskName(jarFile.getName() + ": Change version to " + version);
 			File newPatchFile = PatchFileUtil.changePatchName(jarFile, version);
 			PatchFileUtil.changePatchVersion(newPatchFile, version);
 			subMonitor.worked(unitWeight);

@@ -1,6 +1,7 @@
 package com.byc.tools.patch.utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,8 +14,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.Constants;
 
+import com.byc.tools.patch.PatchPlugin;
 import com.byc.tools.patch.exceptions.PatchException;
 
 /**
@@ -50,7 +53,7 @@ public class PatchFileUtil {
 
 	public static boolean changePatchVersion(File patchFile, String newVersion) throws PatchException {
 		try {
-			File targetFolder = new File(getTmpFolder(), patchFile.getName().replace(".", "_"));
+			File targetFolder = new File(getTmpFolder("changePatchVersion"), patchFile.getName().replace(".", "_"));
 			if (targetFolder.exists()) {
 				FileUtils.deleteDirectory(targetFolder);
 			}
@@ -104,9 +107,17 @@ public class PatchFileUtil {
 		return jarFiles;
 	}
 
-	public static File getTmpFolder() {
-		File tmpFolder = new File(System.getProperty("java.io.tmpdir"));
-		return tmpFolder;
+	public static File getTmpFolder(String name) throws IOException {
+		File sysTmpFolder = new File(System.getProperty("java.io.tmpdir"));
+	    File patchTmpFolder = new File(sysTmpFolder, PatchPlugin.PLUGIN_ID.replace(".", "_"));
+	    if (StringUtils.isNotEmpty(name)) {
+	    	patchTmpFolder = new File(patchTmpFolder, name);
+	    }
+	    if (!patchTmpFolder.exists()) {
+	    	patchTmpFolder.mkdirs();
+	    }
+	    FileUtils.forceDeleteOnExit(patchTmpFolder);
+		return patchTmpFolder;
 	}
 
 	public static String getPatchDefaultVersion(String patchFileName) {
