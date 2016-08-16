@@ -17,7 +17,9 @@ import com.byc.tools.patch.model.PatchInfo;
 import com.byc.tools.patch.publish.P2Publisher;
 import com.byc.tools.patch.publish.impls.FeaturesAndBundlesPublisher;
 import com.byc.tools.patch.services.ChangeVersionService;
+import com.byc.tools.patch.services.ExportPatchService;
 import com.byc.tools.patch.services.impls.ChangeVersionServiceImpl;
+import com.byc.tools.patch.services.impls.ExportPatchServiceImpl;
 
 /**
  * 
@@ -27,6 +29,8 @@ import com.byc.tools.patch.services.impls.ChangeVersionServiceImpl;
 public class MakePatchWizard extends Wizard {
 
 	private PatchInfo patchInfo;
+
+	private PatchMainPage changeVersionPage;
 
 	public MakePatchWizard() {
 		super();
@@ -41,7 +45,7 @@ public class MakePatchWizard extends Wizard {
 
 	@Override
 	public void addPages() {
-		ChangeVersionPage changeVersionPage = new ChangeVersionPage(patchInfo);
+		changeVersionPage = new PatchMainPage(patchInfo);
 		addPage(changeVersionPage);
 	}
 
@@ -53,12 +57,22 @@ public class MakePatchWizard extends Wizard {
 				@Override
 				public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					monitor.beginTask("Making patch...", 1000);
+					boolean doExport = changeVersionPage.isDoExport();
 					try {
-						ChangeVersionService service = new ChangeVersionServiceImpl();
-						service.doChangeVersion(patchInfo, monitor);
-						
-						P2Publisher publisher = new FeaturesAndBundlesPublisher();
-						publisher.publish();
+						// Change name and version.
+						int changeVersionCount = 900;
+						if (doExport) {
+							changeVersionCount = 750;
+						}
+						ChangeVersionService versionService = new ChangeVersionServiceImpl();
+						versionService.setCount(changeVersionCount);
+						versionService.doChangeVersion(patchInfo, monitor);
+						// Export patch
+						if (doExport) {
+							ExportPatchService exportService = new ExportPatchServiceImpl();
+							exportService.setCount(200);
+							exportService.doExportPatch(patchInfo, monitor);
+						}
 					} catch (Exception ex) {
 						throw new InvocationTargetException(ex);
 					} finally {

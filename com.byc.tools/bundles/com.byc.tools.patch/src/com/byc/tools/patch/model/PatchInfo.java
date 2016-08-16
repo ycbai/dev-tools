@@ -1,5 +1,8 @@
 package com.byc.tools.patch.model;
 
+import java.io.File;
+import java.util.List;
+
 /**
  * 
  * @author ycbai
@@ -7,16 +10,18 @@ package com.byc.tools.patch.model;
  */
 public class PatchInfo {
 
-	private String path;
+	private String targetPath;
 
 	private String version;
+	
+	private List<File> jarFiles;
 
-	public String getPath() {
-		return path;
+	public String getTargetPath() {
+		return targetPath;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setTargetPath(String targetPath) {
+		this.targetPath = targetPath;
 	}
 
 	public String getVersion() {
@@ -27,35 +32,17 @@ public class PatchInfo {
 		this.version = version;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((path == null) ? 0 : path.hashCode());
-		result = prime * result + ((version == null) ? 0 : version.hashCode());
-		return result;
+	public List<File> getJarFiles() {
+		return jarFiles;
+	}
+
+	public void setJarFiles(List<File> jarFiles) {
+		this.jarFiles = jarFiles;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PatchInfo other = (PatchInfo) obj;
-		if (path == null) {
-			if (other.path != null)
-				return false;
-		} else if (!path.equals(other.path))
-			return false;
-		if (version == null) {
-			if (other.version != null)
-				return false;
-		} else if (!version.equals(other.version))
-			return false;
-		return true;
+	public String toString() {
+		return "PatchInfo [targetPath=" + targetPath + ", version=" + version + ", jarFiles=" + jarFiles + "]";
 	}
 
 }

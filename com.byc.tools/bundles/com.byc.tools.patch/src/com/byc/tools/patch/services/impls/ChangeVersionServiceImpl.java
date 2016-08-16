@@ -16,22 +16,16 @@ import com.byc.tools.patch.utils.PatchFileUtil;
  * @author ycbai
  *
  */
-public class ChangeVersionServiceImpl implements ChangeVersionService {
+public class ChangeVersionServiceImpl extends MakePatchServiceImpl implements ChangeVersionService {
 
 	@Override
 	public boolean doChangeVersion(PatchInfo patchInfo, IProgressMonitor monitor) throws PatchException {
-		int taskCount = 900;
-		SubMonitor subMonitor = SubMonitor.convert(monitor, taskCount);
+		int totalCount = getCount();
+		SubMonitor subMonitor = SubMonitor.convert(monitor, getCount());
 
-		String path = patchInfo.getPath();
 		String version = patchInfo.getVersion();
-		File patchDir = new File(path);
-
-		List<File> jarFiles = PatchFileUtil.getJarFiles(patchDir);
-		if (jarFiles.size() == 0) {
-			throw new PatchException("There is not any patch file in " + path);
-		}
-		int unitWeight = taskCount / jarFiles.size();
+		List<File> jarFiles = patchInfo.getJarFiles();
+		int unitWeight = totalCount / jarFiles.size();
 		for (int i = 0; i < jarFiles.size(); i++) {
 			File jarFile = jarFiles.get(i);
 			subMonitor.setTaskName("Change version of " + jarFile.getName() + " to " + version);

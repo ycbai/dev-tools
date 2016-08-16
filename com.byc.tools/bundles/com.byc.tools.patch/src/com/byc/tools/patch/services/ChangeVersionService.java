@@ -10,7 +10,7 @@ import com.byc.tools.patch.model.PatchInfo;
  * @author ycbai
  *
  */
-public interface ChangeVersionService {
+public interface ChangeVersionService extends MakePatchService {
 
 	boolean doChangeVersion(PatchInfo patchInfo, IProgressMonitor monitor) throws PatchException;
 
