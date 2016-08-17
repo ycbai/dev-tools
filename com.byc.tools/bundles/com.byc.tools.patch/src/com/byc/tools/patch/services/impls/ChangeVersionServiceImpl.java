@@ -21,17 +21,15 @@ public class ChangeVersionServiceImpl extends MakePatchServiceImpl implements Ch
 	@Override
 	public boolean doChangeVersion(PatchInfo patchInfo, IProgressMonitor monitor) throws PatchException {
 		int totalCount = getCount();
-		SubMonitor subMonitor = SubMonitor.convert(monitor, getCount());
-
 		String version = patchInfo.getVersion();
 		List<File> jarFiles = patchInfo.getJarFiles();
 		int unitWeight = totalCount / jarFiles.size();
 		for (int i = 0; i < jarFiles.size(); i++) {
 			File jarFile = jarFiles.get(i);
-			subMonitor.setTaskName(jarFile.getName() + ": Change version to " + version);
+			monitor.setTaskName(jarFile.getName() + ": Changing version to " + version);
 			File newPatchFile = PatchFileUtil.changePatchName(jarFile, version);
 			PatchFileUtil.changePatchVersion(newPatchFile, version);
-			subMonitor.worked(unitWeight);
+			monitor.worked(unitWeight);
 		}
 		return true;
 	}

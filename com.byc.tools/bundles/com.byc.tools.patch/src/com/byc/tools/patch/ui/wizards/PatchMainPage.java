@@ -36,17 +36,11 @@ public class PatchMainPage extends AbstractMakePatchPage {
 
 	private Button patchPathButton;
 
-	private Button exportPatchButton;
-
 	private Text versionText;
 
 	private Text patchPathText;
 
 	private Composite container;
-
-	private Composite exportComposite;
-
-	private boolean doExport;
 
 	public PatchMainPage(PatchInfo patchInfo) {
 		super("PatchMainPage", patchInfo);
@@ -78,30 +72,14 @@ public class PatchMainPage extends AbstractMakePatchPage {
 
 		new Label(container, SWT.NONE);
 
-		exportPatchButton = new Button(container, SWT.CHECK);
-		exportPatchButton.setText("Export");
-		GridData exportPatchButtonGD = new GridData(GridData.FILL_HORIZONTAL);
-		exportPatchButtonGD.horizontalSpan = 3;
-		exportPatchButton.setLayoutData(exportPatchButtonGD);
-
-		exportComposite = new Composite(container, SWT.NONE);
-		GridLayout exportCompLayout = new GridLayout();
-		exportCompLayout.numColumns = 3;
-		exportCompLayout.marginWidth = 0;
-		exportCompLayout.marginHeight = 0;
-		exportComposite.setLayout(exportCompLayout);
-		GridData exportCompGD = new GridData(GridData.FILL_HORIZONTAL);
-		exportCompGD.horizontalSpan = 3;
-		exportComposite.setLayoutData(exportCompGD);
-		exportComposite.setVisible(false);
-
-		Label patchPathLabel = new Label(exportComposite, SWT.NONE);
+		Label patchPathLabel = new Label(container, SWT.NONE);
 		patchPathLabel.setText("Patch Path");
 
-		patchPathText = new Text(exportComposite, SWT.BORDER | SWT.SINGLE);
+		patchPathText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		patchPathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		patchPathText.setEditable(false);
 
-		patchPathButton = new Button(exportComposite, SWT.PUSH);
+		patchPathButton = new Button(container, SWT.PUSH);
 		patchPathButton.setText("Browse...");
 
 		addListeners();
@@ -127,7 +105,6 @@ public class PatchMainPage extends AbstractMakePatchPage {
 				String directory = dial.open();
 				if (StringUtils.isNotEmpty(directory)) {
 					pluginsPathText.setText(directory);
-					// updateJarFiles(directory);
 				}
 			}
 		});
@@ -136,14 +113,6 @@ public class PatchMainPage extends AbstractMakePatchPage {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				patchInfo.setVersion(versionText.getText());
-				updatePageStatus();
-			}
-		});
-		exportPatchButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				exportComposite.setVisible(exportPatchButton.getSelection());
-				setDoExport(exportPatchButton.getSelection());
 				updatePageStatus();
 			}
 		});
@@ -188,7 +157,7 @@ public class PatchMainPage extends AbstractMakePatchPage {
 			setErrorMessage("There is not any plugin in " + pluginsPathText.getText());
 		} else if (StringUtils.isBlank(versionText.getText())) {
 			setErrorMessage("Target version cannot be null!");
-		} else if (exportPatchButton.getSelection() && StringUtils.isBlank(patchPathText.getText())) {
+		} else if (StringUtils.isBlank(patchPathText.getText())) {
 			setErrorMessage("Patch Path cannot be null!");
 		}
 		setPageComplete(getErrorMessage() == null);
@@ -206,14 +175,6 @@ public class PatchMainPage extends AbstractMakePatchPage {
 			}
 		}
 		return version;
-	}
-
-	public boolean isDoExport() {
-		return doExport;
-	}
-
-	public void setDoExport(boolean doExport) {
-		this.doExport = doExport;
 	}
 
 	private void fillDefaultVersion() {

@@ -3,7 +3,8 @@ package com.byc.tools.patch.publish.impls;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -18,6 +19,7 @@ import org.eclipse.equinox.p2.publisher.IPublisherInfo;
 import org.eclipse.equinox.p2.publisher.Publisher;
 import org.eclipse.equinox.p2.publisher.PublisherInfo;
 import org.eclipse.equinox.p2.publisher.eclipse.BundlesAction;
+import org.eclipse.equinox.p2.publisher.eclipse.FeaturesAction;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 
@@ -25,8 +27,7 @@ import com.byc.tools.patch.exceptions.PublishException;
 import com.byc.tools.patch.publish.P2Publisher;
 
 /**
- * Publish features and bundles to p2 repository. Now only support bundles
- * publishing.
+ * Publish features and bundles to p2 repository.
  * 
  * @author ycbai
  *
@@ -68,34 +69,20 @@ public class FeaturesAndBundlesPublisher implements P2Publisher {
 	public static IPublisherInfo createPublisherInfo(String metadataRepositoryPath, String artifactRepositoryPath)
 			throws ProvisionException, URISyntaxException {
 		PublisherInfo result = new PublisherInfo();
+		Map<String, String> properties = new HashMap<>();
+		properties.put("p2.compressed", "false");
 
 		// Create the metadata repository. This will fail if a repository
 		// already exists here
-		// String metadataRepositoryPath = "file:D:/Patch/test/p2site";
-		// String metadataRepositoryPath =
-		// "file:/Users/ycbai/Desktop/rep/p2site";
-		// IMetadataRepository metadataRepository = new
-		// SimpleMetadataRepositoryFactory().create(
-		// new URI(metadataRepositoryPath), "Sample Metadata Repository",
-		// MetadataRepositoryManager.TYPE_SIMPLE_REPOSITORY,
-		// Collections.emptyMap());
 		IMetadataRepository metadataRepository = new SimpleMetadataRepositoryFactory().create(
 				new URI(metadataRepositoryPath), metadataRepositoryPath + " - metadata",
-				MetadataRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.emptyMap());
+				MetadataRepositoryManager.TYPE_SIMPLE_REPOSITORY, properties);
 
 		// Create the artifact repository. This will fail if a repository
 		// already exists here
-		// String artifactRepositoryPath = "file:D:/Patch/test/p2site";
-		// String artifactRepositoryPath =
-		// "file:/Users/ycbai/Desktop/rep/p2site";
-		// IArtifactRepository artifactRepository = new
-		// SimpleArtifactRepositoryFactory().create(
-		// new URI(artifactRepositoryPath), "Sample Artifact Repository",
-		// ArtifactRepositoryManager.TYPE_SIMPLE_REPOSITORY,
-		// Collections.emptyMap());
 		IArtifactRepository artifactRepository = new SimpleArtifactRepositoryFactory().create(
 				new URI(artifactRepositoryPath), artifactRepositoryPath + " - artifacts",
-				ArtifactRepositoryManager.TYPE_SIMPLE_REPOSITORY, Collections.emptyMap());
+				ArtifactRepositoryManager.TYPE_SIMPLE_REPOSITORY, properties);
 
 		result.setMetadataRepository(metadataRepository);
 		result.setArtifactRepository(artifactRepository);
@@ -104,14 +91,10 @@ public class FeaturesAndBundlesPublisher implements P2Publisher {
 	}
 
 	public static IPublisherAction[] createActions(String sourcePath) {
-		IPublisherAction[] result = new IPublisherAction[1];
-		File[] bundleLocations = new File[1];
-		// bundleLocations[0] = new File("/Users/ycbai/Desktop/rep/bundles");
-		// bundleLocations[0] = new File("/D:/Patch/test/bundles");
-		bundleLocations[0] = new File(sourcePath);
+		File[] bundleLocations = new File[] { new File(sourcePath) };
 		BundlesAction bundlesAction = new BundlesAction(bundleLocations);
-		result[0] = bundlesAction;
-		return result;
+		FeaturesAction featuresAction = new FeaturesAction(bundleLocations);
+		return new IPublisherAction[] { bundlesAction, featuresAction };
 	}
 
 }

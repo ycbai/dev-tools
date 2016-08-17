@@ -14,8 +14,6 @@ import org.eclipse.jface.wizard.Wizard;
 import com.byc.tools.patch.PatchPlugin;
 import com.byc.tools.patch.log.ExceptionLogger;
 import com.byc.tools.patch.model.PatchInfo;
-import com.byc.tools.patch.publish.P2Publisher;
-import com.byc.tools.patch.publish.impls.FeaturesAndBundlesPublisher;
 import com.byc.tools.patch.services.ChangeVersionService;
 import com.byc.tools.patch.services.ExportPatchService;
 import com.byc.tools.patch.services.impls.ChangeVersionServiceImpl;
@@ -30,12 +28,13 @@ public class MakePatchWizard extends Wizard {
 
 	private PatchInfo patchInfo;
 
-	private PatchMainPage changeVersionPage;
+	private PatchMainPage patchMainPage;
 
 	public MakePatchWizard() {
 		super();
 		patchInfo = new PatchInfo();
 		setNeedsProgressMonitor(true);
+		setHelpAvailable(false);
 	}
 
 	@Override
@@ -45,8 +44,8 @@ public class MakePatchWizard extends Wizard {
 
 	@Override
 	public void addPages() {
-		changeVersionPage = new PatchMainPage(patchInfo);
-		addPage(changeVersionPage);
+		patchMainPage = new PatchMainPage(patchInfo);
+		addPage(patchMainPage);
 	}
 
 	@Override
@@ -57,22 +56,15 @@ public class MakePatchWizard extends Wizard {
 				@Override
 				public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					monitor.beginTask("Making patch...", 1000);
-					boolean doExport = changeVersionPage.isDoExport();
 					try {
 						// Change name and version.
-						int changeVersionCount = 900;
-						if (doExport) {
-							changeVersionCount = 750;
-						}
 						ChangeVersionService versionService = new ChangeVersionServiceImpl();
-						versionService.setCount(changeVersionCount);
+						versionService.setCount(800);
 						versionService.doChangeVersion(patchInfo, monitor);
 						// Export patch
-						if (doExport) {
-							ExportPatchService exportService = new ExportPatchServiceImpl();
-							exportService.setCount(200);
-							exportService.doExportPatch(patchInfo, monitor);
-						}
+						ExportPatchService exportService = new ExportPatchServiceImpl();
+						exportService.setCount(150);
+						exportService.doExportPatch(patchInfo, monitor);
 					} catch (Exception ex) {
 						throw new InvocationTargetException(ex);
 					} finally {
