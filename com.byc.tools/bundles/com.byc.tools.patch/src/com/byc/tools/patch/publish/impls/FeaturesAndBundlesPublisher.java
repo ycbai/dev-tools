@@ -20,6 +20,7 @@ import org.eclipse.equinox.p2.publisher.Publisher;
 import org.eclipse.equinox.p2.publisher.PublisherInfo;
 import org.eclipse.equinox.p2.publisher.eclipse.BundlesAction;
 import org.eclipse.equinox.p2.publisher.eclipse.FeaturesAction;
+import org.eclipse.equinox.p2.repository.IRepository;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepository;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepository;
 
@@ -70,7 +71,7 @@ public class FeaturesAndBundlesPublisher implements P2Publisher {
 			throws ProvisionException, URISyntaxException {
 		PublisherInfo result = new PublisherInfo();
 		Map<String, String> properties = new HashMap<>();
-		properties.put("p2.compressed", "false");
+		properties.put(IRepository.PROP_COMPRESSED, "false");
 
 		// Create the metadata repository. This will fail if a repository
 		// already exists here

@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +61,7 @@ public class PatchFileUtil {
 			ZipFileUtil.unZip(patchFile, targetFolder.getAbsolutePath());
 			patchFile.delete();
 
-			File targetManifest = new File(targetFolder + "/META-INF/MANIFEST.MF");
+			File targetManifest = new File(targetFolder + JarFile.MANIFEST_NAME);
 			if (targetManifest.isFile() && targetManifest.exists()) {
 				replaceVersion(targetManifest, newVersion);
 			}

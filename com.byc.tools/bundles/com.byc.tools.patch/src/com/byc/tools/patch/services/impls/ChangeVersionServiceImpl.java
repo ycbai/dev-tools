@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubMonitor;
 
 import com.byc.tools.patch.exceptions.PatchException;
 import com.byc.tools.patch.model.PatchInfo;
