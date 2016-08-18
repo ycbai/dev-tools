@@ -38,12 +38,12 @@ public class ExportPatchServiceImpl extends MakePatchServiceImpl implements Expo
 			FileUtils.copyDirectory(jarFolder, pluginsFolder);
 			File siteFolder = new File(tmpFolder, "p2site");
 			List<File> otherTypeFiles = new ArrayList<>();
-			File[] files = pluginsFolder.listFiles();
-			for (File file : files) {
-				if (!file.getName().endsWith(PatchFileUtil.JAR_SUFFIX)) {
-					otherTypeFiles.add(file);
-				}
-			}
+//			File[] files = pluginsFolder.listFiles();
+//			for (File file : files) {
+//				if (!file.getName().endsWith(PatchFileUtil.JAR_SUFFIX)) {
+//					otherTypeFiles.add(file);
+//				}
+//			}
 			monitor.worked(unitWeight * 30);
 
 			monitor.setTaskName("Generating p2 repository");

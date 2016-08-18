@@ -20,7 +20,7 @@ public class MakePatchHandler extends AbstractHandler {
 		IWorkbenchWindow window = HandlerUtil.getActiveWorkbenchWindowChecked(event);
 		WizardDialog dialog = new WizardDialog(window.getShell(), new MakePatchWizard());
 		dialog.open();
-
+		
 		return null;
 	}
 
