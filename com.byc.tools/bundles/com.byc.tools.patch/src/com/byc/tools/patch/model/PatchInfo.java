@@ -3,6 +3,10 @@ package com.byc.tools.patch.model;
 import java.io.File;
 import java.util.List;
 
+import com.byc.tools.patch.exceptions.PatchException;
+import com.byc.tools.patch.log.ExceptionLogger;
+import com.byc.tools.patch.utils.PatchFileUtil;
+
 /**
  * 
  * @author ycbai
@@ -13,7 +17,9 @@ public class PatchInfo {
 	private String targetPath;
 
 	private String version;
-	
+
+	private File pluginsFolder;
+
 	private List<File> jarFiles;
 
 	public String getTargetPath() {
@@ -32,17 +38,32 @@ public class PatchInfo {
 		this.version = version;
 	}
 
-	public List<File> getJarFiles() {
-		return jarFiles;
+	public File getPluginsFolder() {
+		return pluginsFolder;
 	}
 
-	public void setJarFiles(List<File> jarFiles) {
-		this.jarFiles = jarFiles;
+	public void setPluginsFolder(File pluginsFolder) {
+		if (pluginsFolder != null && !pluginsFolder.equals(this.pluginsFolder)) {
+			this.pluginsFolder = pluginsFolder;
+			jarFiles = null;
+		}
+	}
+
+	public List<File> getJarFiles() {
+		if (jarFiles == null) {
+			try {
+				jarFiles = PatchFileUtil.getJarFiles(getPluginsFolder());
+			} catch (PatchException ex) {
+				ExceptionLogger.log(ex);
+			}
+		}
+		return jarFiles;
 	}
 
 	@Override
 	public String toString() {
-		return "PatchInfo [targetPath=" + targetPath + ", version=" + version + ", jarFiles=" + jarFiles + "]";
+		return "PatchInfo [targetPath=" + targetPath + ", version=" + version + ", pluginsFolder=" + pluginsFolder
+				+ ", jarFiles=" + jarFiles + "]";
 	}
 
 }

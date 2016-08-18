@@ -29,21 +29,23 @@ public class ExportPatchServiceImpl extends MakePatchServiceImpl implements Expo
 			if (tmpFolder.exists()) {
 				FileUtils.forceDelete(tmpFolder);
 			}
-			List<File> jarFiles = patchInfo.getJarFiles();
-			File jarFile = jarFiles.get(0);
-			File jarFolder = jarFile.getParentFile();
+			File originalPluginsFolder = patchInfo.getPluginsFolder();
 			File bundlesFolder = new File(tmpFolder, "bundles");
 			File pluginsFolder = new File(bundlesFolder, "plugins");
-			pluginsFolder.mkdirs();
-			FileUtils.copyDirectory(jarFolder, pluginsFolder);
+			FileUtils.copyDirectory(originalPluginsFolder, pluginsFolder);
 			File siteFolder = new File(tmpFolder, "p2site");
-			List<File> otherTypeFiles = new ArrayList<>();
-//			File[] files = pluginsFolder.listFiles();
-//			for (File file : files) {
-//				if (!file.getName().endsWith(PatchFileUtil.JAR_SUFFIX)) {
-//					otherTypeFiles.add(file);
-//				}
-//			}
+			File[] otherTypeFiles = pluginsFolder.listFiles(new FileFilter() {
+
+				@Override
+				public boolean accept(File file) {
+					return !file.getName().endsWith(PatchFileUtil.JAR_SUFFIX);
+				}
+
+			});
+			File newPluginsFolder = new File(siteFolder, "plugins");
+			for (File file : otherTypeFiles) {
+				FileUtils.moveFileToDirectory(file, newPluginsFolder, true);
+			}
 			monitor.worked(unitWeight * 30);
 
 			monitor.setTaskName("Generating p2 repository");
@@ -51,11 +53,6 @@ public class ExportPatchServiceImpl extends MakePatchServiceImpl implements Expo
 			publisher.publish(siteFolder.getAbsolutePath(), siteFolder.getAbsolutePath(),
 					bundlesFolder.getAbsolutePath());
 			monitor.worked(unitWeight * 40);
-			
-			File newPluginsFolder = new File(siteFolder, "plugins");
-			for (File file : otherTypeFiles) {
-				FileUtils.moveFileToDirectory(file, newPluginsFolder, true);
-			}
 
 			monitor.setTaskName("Compressing p2 repository");
 			ZipFileUtil.zip(siteFolder.getAbsolutePath(), patchInfo.getTargetPath());

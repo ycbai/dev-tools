@@ -61,7 +61,7 @@ public class PatchFileUtil {
 			ZipFileUtil.unZip(patchFile, targetFolder.getAbsolutePath());
 			patchFile.delete();
 
-			File targetManifest = new File(targetFolder + JarFile.MANIFEST_NAME);
+			File targetManifest = new File(targetFolder, JarFile.MANIFEST_NAME);
 			if (targetManifest.isFile() && targetManifest.exists()) {
 				replaceVersion(targetManifest, newVersion);
 			}

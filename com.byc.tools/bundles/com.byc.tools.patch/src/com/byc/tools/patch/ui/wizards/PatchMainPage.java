@@ -1,6 +1,7 @@
 package com.byc.tools.patch.ui.wizards;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -139,21 +140,15 @@ public class PatchMainPage extends AbstractMakePatchPage {
 	}
 
 	private void updateJarFiles(String pluginsPath) {
-		try {
-			List<File> jarFiles = PatchFileUtil.getJarFiles(new File(pluginsPath));
-			patchInfo.setJarFiles(jarFiles);
-			fillDefaultVersion();
-		} catch (PatchException ex) {
-			ExceptionLogger.log(ex);
-		}
+		patchInfo.setPluginsFolder(new File(pluginsPath));
+		fillDefaultVersion();
 	}
 
 	private void updatePageStatus() {
 		setErrorMessage(null);
-		List<File> jarFiles = patchInfo.getJarFiles();
 		if (StringUtils.isBlank(pluginsPathText.getText())) {
 			setErrorMessage("Plugins Path cannot be null!");
-		} else if (jarFiles == null || jarFiles.isEmpty()) {
+		} else if (patchInfo.getJarFiles() == null || patchInfo.getJarFiles().isEmpty()) {
 			setErrorMessage("There is not any plugin in " + pluginsPathText.getText());
 		} else if (StringUtils.isBlank(versionText.getText())) {
 			setErrorMessage("Target version cannot be null!");
