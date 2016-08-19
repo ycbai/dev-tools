@@ -2,7 +2,7 @@
 <feature
       id="com.byc.tools.patch.feature"
       label="Patch Tool"
-      version="1.0.0.qualifier"
+      version="1.0.1.qualifier"
       provider-name="BYC">
 
    <description url="https://ycbai.github.io/dev-tools/">

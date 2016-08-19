@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.byc.tools.patch.feature_1.0.0.qualifier.jar" id="com.byc.tools.patch.feature" version="1.0.0.qualifier">
+   <feature url="features/com.byc.tools.patch.feature_1.0.1.qualifier.jar" id="com.byc.tools.patch.feature" version="1.0.1.qualifier">
       <category name="dev-tools"/>
    </feature>
    <category-def name="dev-tools" label="BYC Development Tools"/>

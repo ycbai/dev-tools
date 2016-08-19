@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.byc.tools</groupId>
 	<artifactId>com.byc.tools.root</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<parent>
 		<groupId>com.byc.tools</groupId>
 		<artifactId>com.byc.tools.configuration</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.1-SNAPSHOT</version>
 		<relativePath>./releng/com.byc.tools.configuration</relativePath>
 	</parent>
 
