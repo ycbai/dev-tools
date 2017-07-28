@@ -1,11 +1,11 @@
 package com.byc.tools.patch.ui.wizards;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -13,23 +13,34 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-import com.byc.tools.patch.exceptions.PatchException;
-import com.byc.tools.patch.log.ExceptionLogger;
 import com.byc.tools.patch.model.PatchInfo;
 import com.byc.tools.patch.utils.PatchFileUtil;
 
 /**
- * 
+ *
  * @author ycbai
  *
  */
 public class PatchMainPage extends AbstractMakePatchPage {
+
+	private Button oldPatchSelBtn;
+
+	private Button newPatchSelBtn;
+
+	private Composite patchContainer;
+
+	private StackLayout patchContainerLayout;
+
+	private Composite oldPatchContainer;
+
+	private Composite newPatchContainer;
 
 	private Text pluginsPathText;
 
@@ -41,7 +52,13 @@ public class PatchMainPage extends AbstractMakePatchPage {
 
 	private Text patchPathText;
 
-	private Composite container;
+	private Text productPathText;
+
+	private Button productPathButton;
+
+	private Combo patchBranchCombo;
+
+	private boolean isNewPatch = true;
 
 	public PatchMainPage(PatchInfo patchInfo) {
 		super("PatchMainPage", patchInfo);
@@ -51,10 +68,56 @@ public class PatchMainPage extends AbstractMakePatchPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		container = new Composite(parent, SWT.NONE);
+		Composite container = new Composite(parent, SWT.NONE);
+		GridLayout containerLayout = new GridLayout();
+		container.setLayout(containerLayout);
+		container.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+		Composite btnComp = new Composite(container, SWT.NONE);
+		GridLayout btnCompLayout = new GridLayout();
+		btnCompLayout.numColumns = 2;
+		btnComp.setLayout(btnCompLayout);
+
+		oldPatchSelBtn = new Button(btnComp, SWT.RADIO);
+		oldPatchSelBtn.setText("Old Patch");
+		oldPatchSelBtn.setSelection(false);
+
+		newPatchSelBtn = new Button(btnComp, SWT.RADIO);
+		newPatchSelBtn.setText("New Patch");
+		newPatchSelBtn.setSelection(true);
+
+		patchContainer = new Composite(container, SWT.NONE);
+		patchContainerLayout = new StackLayout();
+		patchContainer.setLayout(patchContainerLayout);
+		patchContainer.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+		oldPatchContainer = new Composite(patchContainer, SWT.NONE);
+		GridLayout oldPatchContainerLayout = new GridLayout();
+		oldPatchContainer.setLayout(oldPatchContainerLayout);
+		oldPatchContainer.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+		newPatchContainer = new Composite(patchContainer, SWT.NONE);
+		GridLayout newPatchContainerLayout = new GridLayout();
+		newPatchContainer.setLayout(newPatchContainerLayout);
+		newPatchContainer.setLayoutData(new GridData(GridData.FILL_BOTH));
+		patchContainerLayout.topControl = newPatchContainer;
+
+		createOldPatchPanel(oldPatchContainer);
+		createNewPatchPanel(newPatchContainer);
+
+		addListeners();
+		updatePageStatus();
+
+		setControl(container);
+		setPageComplete(false);
+	}
+
+	private void createOldPatchPanel(Composite parent) {
+		Composite container = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
-		container.setLayout(layout);
 		layout.numColumns = 3;
+		container.setLayout(layout);
+		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Label dataPathLabel = new Label(container, SWT.NONE);
 		dataPathLabel.setText("Plugins Path");
@@ -82,15 +145,89 @@ public class PatchMainPage extends AbstractMakePatchPage {
 
 		patchPathButton = new Button(container, SWT.PUSH);
 		patchPathButton.setText("Browse...");
+	}
 
-		addListeners();
-		updatePageStatus();
+	private void createNewPatchPanel(Composite parent) {
+		Composite container = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 3;
+		container.setLayout(layout);
+		container.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		setControl(container);
-		setPageComplete(false);
+		Label productPathLabel = new Label(container, SWT.NONE);
+		productPathLabel.setText("Product Path");
+
+		productPathText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		productPathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		productPathButton = new Button(container, SWT.PUSH);
+		productPathButton.setText("Browse...");
+
+		Label patchBranchLabel = new Label(container, SWT.NONE);
+		patchBranchLabel.setText("Patch Branch");
+
+		patchBranchCombo = new Combo(container, SWT.NONE);
+		patchBranchCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		patchBranchCombo.setItems(new String[] {"a", "b", "c" });
+
+		new Label(container, SWT.NONE);
+
+		Label patchPathLabel = new Label(container, SWT.NONE);
+		patchPathLabel.setText("Patch Path");
+
+		patchPathText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		patchPathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		patchPathText.setEditable(false);
+
+		patchPathButton = new Button(container, SWT.PUSH);
+		patchPathButton.setText("Browse...");
 	}
 
 	private void addListeners() {
+		oldPatchSelBtn.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				patchContainerLayout.topControl = oldPatchContainer;
+				patchContainer.layout();
+				isNewPatch = false;
+				updatePageStatus();
+			}
+		});
+		newPatchSelBtn.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				patchContainerLayout.topControl = newPatchContainer;
+				patchContainer.layout();
+				isNewPatch = true;
+				updatePageStatus();
+			}
+		});
+		productPathText.addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				patchInfo.setProductFolder(productPathText.getText());
+				updatePageStatus();
+			}
+		});
+		productPathButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				DirectoryDialog dial = new DirectoryDialog(getShell(), SWT.NONE);
+				String directory = dial.open();
+				if (StringUtils.isNotEmpty(directory)) {
+					productPathText.setText(directory);
+				}
+			}
+		});
+		patchBranchCombo.addModifyListener(new ModifyListener() {
+
+			@Override
+			public void modifyText(ModifyEvent e) {
+				patchInfo.setPatchBranch(patchBranchCombo.getText());
+				updatePageStatus();
+			}
+		});
 		pluginsPathText.addModifyListener(new ModifyListener() {
 
 			@Override
@@ -146,14 +283,29 @@ public class PatchMainPage extends AbstractMakePatchPage {
 
 	private void updatePageStatus() {
 		setErrorMessage(null);
-		if (StringUtils.isBlank(pluginsPathText.getText())) {
-			setErrorMessage("Plugins Path cannot be null!");
-		} else if (patchInfo.getJarFiles() == null || patchInfo.getJarFiles().isEmpty()) {
-			setErrorMessage("There is not any plugin in " + pluginsPathText.getText());
-		} else if (StringUtils.isBlank(versionText.getText())) {
-			setErrorMessage("Target version cannot be null!");
-		} else if (StringUtils.isBlank(patchPathText.getText())) {
+		if (isNewPatch) {
+			if (StringUtils.isBlank(productPathText.getText())) {
+				setErrorMessage("Product Path cannot be null!");
+				return;
+			} else if (StringUtils.isBlank(patchBranchCombo.getText())) {
+				setErrorMessage("Patch Branch cannot be null!");
+				return;
+			}
+		} else {
+			if (StringUtils.isBlank(pluginsPathText.getText())) {
+				setErrorMessage("Plugins Path cannot be null!");
+				return;
+			} else if (patchInfo.getJarFiles() == null || patchInfo.getJarFiles().isEmpty()) {
+				setErrorMessage("There is not any plugin in " + pluginsPathText.getText());
+				return;
+			} else if (StringUtils.isBlank(versionText.getText())) {
+				setErrorMessage("Target version cannot be null!");
+				return;
+			}
+		}
+		if (StringUtils.isBlank(patchPathText.getText())) {
 			setErrorMessage("Patch Path cannot be null!");
+			return;
 		}
 		setPageComplete(getErrorMessage() == null);
 	}
