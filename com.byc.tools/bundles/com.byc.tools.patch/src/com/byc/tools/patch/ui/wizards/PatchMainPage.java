@@ -331,4 +331,8 @@ public class PatchMainPage extends AbstractMakePatchPage {
 		}
 	}
 
+	public boolean isNewPatch() {
+		return isNewPatch;
+	}
+
 }

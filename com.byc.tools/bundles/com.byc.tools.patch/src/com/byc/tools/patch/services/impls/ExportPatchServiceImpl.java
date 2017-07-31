@@ -3,12 +3,9 @@ package com.byc.tools.patch.services.impls;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubMonitor;
 
 import com.byc.tools.patch.exceptions.PatchException;
 import com.byc.tools.patch.model.PatchInfo;
