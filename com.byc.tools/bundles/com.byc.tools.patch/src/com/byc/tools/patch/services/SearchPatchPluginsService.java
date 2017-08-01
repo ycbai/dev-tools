@@ -1,10 +1,11 @@
 package com.byc.tools.patch.services;
 
-import java.io.File;
 import java.util.List;
+
+import com.byc.tools.patch.exceptions.PatchException;
 
 public interface SearchPatchPluginsService extends MakePatchService {
 
-	public List<File> searchPatchPlugins(String[] gitReps, String patchBranch);
+	public List<String> searchPatchPlugins(String patchBranch) throws PatchException;
 
 }
