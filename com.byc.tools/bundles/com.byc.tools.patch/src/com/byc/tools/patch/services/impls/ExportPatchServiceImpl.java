@@ -8,7 +8,6 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.byc.tools.patch.exceptions.PatchException;
-import com.byc.tools.patch.model.PatchInfo;
 import com.byc.tools.patch.publish.P2Publisher;
 import com.byc.tools.patch.publish.impls.FeaturesAndBundlesPublisher;
 import com.byc.tools.patch.services.ExportPatchService;
@@ -18,7 +17,7 @@ import com.byc.tools.patch.utils.ZipFileUtil;
 public class ExportPatchServiceImpl extends MakePatchServiceImpl implements ExportPatchService {
 
 	@Override
-	public boolean doExportPatch(PatchInfo patchInfo, IProgressMonitor monitor) throws PatchException {
+	public boolean doExportPatch(File originalPluginsFolder, String targetPath, IProgressMonitor monitor) throws PatchException {
 		int totalCount = getCount();
 		int unitWeight = totalCount / 100;
 		try {
@@ -26,7 +25,6 @@ public class ExportPatchServiceImpl extends MakePatchServiceImpl implements Expo
 			if (tmpFolder.exists()) {
 				FileUtils.forceDelete(tmpFolder);
 			}
-			File originalPluginsFolder = patchInfo.getPluginsFolder();
 			File bundlesFolder = new File(tmpFolder, "bundles");
 			File pluginsFolder = new File(bundlesFolder, "plugins");
 			FileUtils.copyDirectory(originalPluginsFolder, pluginsFolder);
@@ -52,7 +50,7 @@ public class ExportPatchServiceImpl extends MakePatchServiceImpl implements Expo
 			monitor.worked(unitWeight * 40);
 
 			monitor.setTaskName("Compressing p2 repository");
-			ZipFileUtil.zip(siteFolder.getAbsolutePath(), patchInfo.getTargetPath());
+			ZipFileUtil.zip(siteFolder.getAbsolutePath(), targetPath);
 			FileUtils.forceDeleteOnExit(tmpFolder);
 			monitor.worked(unitWeight * 30);
 		} catch (IOException e) {

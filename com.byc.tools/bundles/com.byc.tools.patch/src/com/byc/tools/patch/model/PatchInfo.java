@@ -14,8 +14,6 @@ import com.byc.tools.patch.utils.PatchFileUtil;
  */
 public class PatchInfo {
 
-	private String productFolder;
-
 	private String patchBranch;
 
 	private String targetPath;
@@ -25,14 +23,6 @@ public class PatchInfo {
 	private File pluginsFolder;
 
 	private List<File> jarFiles;
-
-	public String getProductFolder() {
-		return productFolder;
-	}
-
-	public void setProductFolder(String productFolder) {
-		this.productFolder = productFolder;
-	}
 
 	public String getPatchBranch() {
 		return patchBranch;
@@ -82,8 +72,8 @@ public class PatchInfo {
 
 	@Override
 	public String toString() {
-		return "PatchInfo [productFolder=" + productFolder + ", patchBranch=" + patchBranch + ", targetPath="
-				+ targetPath + ", version=" + version + ", pluginsFolder=" + pluginsFolder + "]";
+		return "PatchInfo [patchBranch=" + patchBranch + ", targetPath=" + targetPath + ", version=" + version
+				+ ", pluginsFolder=" + pluginsFolder + "]";
 	}
 
 }

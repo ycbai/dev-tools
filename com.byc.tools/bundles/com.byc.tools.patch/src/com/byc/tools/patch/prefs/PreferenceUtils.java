@@ -12,7 +12,7 @@ public class PreferenceUtils {
 
 	public final static String PREF_KEY_GIT_REPS = "GRS";
 
-	public final static String PREF_KEY_BRANCH_NAMES = "PBS";
+	public final static String PREF_KEY_BRANCHES = "PBS";
 
 	private static IPreferenceStore store = PatchPlugin.getDefault().getPreferenceStore();
 
@@ -25,7 +25,7 @@ public class PreferenceUtils {
 	}
 
 	public static String[] getPatchBranches() {
-		String grs = store.getString(PREF_KEY_BRANCH_NAMES);
+		String grs = store.getString(PREF_KEY_BRANCHES);
 		if (grs != null) {
 			return getArrayByString(grs);
 		}

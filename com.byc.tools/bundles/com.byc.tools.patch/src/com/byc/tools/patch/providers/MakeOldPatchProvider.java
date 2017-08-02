@@ -20,7 +20,7 @@ public class MakeOldPatchProvider implements IMakePatchProvider {
 		// Export patch
 		ExportPatchService exportService = new ExportPatchServiceImpl();
 		exportService.setCount(150);
-		exportService.doExportPatch(patchInfo, monitor);
+		exportService.doExportPatch(patchInfo.getPluginsFolder(), patchInfo.getTargetPath(), monitor);
 
 		return true;
 	}

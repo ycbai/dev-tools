@@ -50,4 +50,10 @@ public class GenericListEditor extends ListEditor {
 		return PreferenceUtils.getArrayByString(stringList);
 	}
 
+	@Override
+	protected void selectionChanged() {
+		super.selectionChanged();
+		fireValueChanged(IGenericConstants.EVENT_REPS_CHANGED, null, getList().getItems());
+	}
+
 }
