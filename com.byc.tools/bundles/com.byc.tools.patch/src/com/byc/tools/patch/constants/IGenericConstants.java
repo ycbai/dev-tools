@@ -15,6 +15,8 @@ public interface IGenericConstants {
 	public final static String COMMA = ",";
 
 	public final static String EMPTY = "";
+	
+	public final static String JAR_SUFFIX = ".jar";
 
 	public final static String EVENT_REPS_CHANGED = "EVENT_REPS_CHANGED";
 

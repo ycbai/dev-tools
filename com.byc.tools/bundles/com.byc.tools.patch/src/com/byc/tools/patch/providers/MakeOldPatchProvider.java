@@ -17,6 +17,7 @@ public class MakeOldPatchProvider implements IMakePatchProvider {
 		ChangeVersionService versionService = new ChangeVersionServiceImpl();
 		versionService.setCount(800);
 		versionService.doChangeVersion(patchInfo, monitor);
+		
 		// Export patch
 		ExportPatchService exportService = new ExportPatchServiceImpl();
 		exportService.setCount(150);

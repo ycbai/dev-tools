@@ -10,22 +10,28 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import com.byc.tools.patch.constants.IGenericConstants;
 import com.byc.tools.patch.exceptions.PatchException;
 import com.byc.tools.patch.services.CopyPatchPluginsService;
 import com.byc.tools.patch.utils.PatchFileUtil;
+import com.byc.tools.patch.utils.ZipFileUtil;
 
 public class CopyPatchPluginsServiceImpl extends MakePatchServiceImpl implements CopyPatchPluginsService {
 
 	private static final String PLUGIN_FILE_NAME_PATTERN = "(org\\.talend(.\\w+)+)_\\d\\.\\d\\.\\d\\.\\d{8}_\\d{4}.*";
 
 	@Override
-	public boolean copyPatchPlugins(File pluginsFolder, Set<String> pluginNames, IProgressMonitor monitor)
-			throws PatchException {
+	public boolean copyPatchPlugins(File pluginsFolder, Set<String> pluginNames, File targetFolder,
+			IProgressMonitor monitor) throws PatchException {
+		int totalCount = getCount();
+		int unitWeight = totalCount / 100;
 		try {
 			File tmpFolder = PatchFileUtil.getTmpFolder("pluginsTmpFolder");
 			if (tmpFolder.exists()) {
 				FileUtils.forceDelete(tmpFolder);
 			}
+			monitor.worked(unitWeight * 10);
+			monitor.setTaskName("Filter plugins...");
 			File[] filterFiles = pluginsFolder.listFiles(new FileFilter() {
 
 				@Override
@@ -34,10 +40,22 @@ public class CopyPatchPluginsServiceImpl extends MakePatchServiceImpl implements
 				}
 
 			});
+			monitor.worked(unitWeight * 30);
+			monitor.setTaskName("Copy plugins...");
+			for (File file : filterFiles) {
+				FileUtils.copyFileToDirectory(file, tmpFolder, true);
+				File newFile = new File(tmpFolder, file.getName());
+				if (newFile.isDirectory()) {
+					File targetFile = new File(newFile.getAbsolutePath() + IGenericConstants.JAR_SUFFIX);
+					ZipFileUtil.zip(newFile.getAbsolutePath(), targetFile.getAbsolutePath());
+				}
+			}
+			FileUtils.copyDirectory(tmpFolder, targetFolder);
+			monitor.worked(unitWeight * 60);
 		} catch (IOException e) {
 			throw new PatchException(e);
 		}
-		return false;
+		return true;
 	}
 
 	private boolean isFileNeeded(File file, Set<String> pluginNames) {

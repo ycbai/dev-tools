@@ -9,6 +9,6 @@ import com.byc.tools.patch.exceptions.PatchException;
 
 public interface CopyPatchPluginsService extends MakePatchService {
 
-	public boolean copyPatchPlugins(File pluginsFolder, Set<String> pluginNames, IProgressMonitor monitor) throws PatchException;
+	public boolean copyPatchPlugins(File pluginsFolder, Set<String> pluginNames, File targetFolder, IProgressMonitor monitor) throws PatchException;
 
 }

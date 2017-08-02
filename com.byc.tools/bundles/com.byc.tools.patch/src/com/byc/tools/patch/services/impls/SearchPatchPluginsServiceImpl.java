@@ -2,7 +2,9 @@ package com.byc.tools.patch.services.impls;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,16 +44,22 @@ public class SearchPatchPluginsServiceImpl extends MakePatchServiceImpl implemen
 			return pluginNames;
 		}
 
-		String startSha1 = null;
+		Map<String, String> rep2sha1Map = new HashMap<>();
 		for (String br : patchBranches) {
-			if (br.contains(patchBranch)) {
-				String[] bra = br.split(IGenericConstants.COLON);
-				if (bra.length > 1) {
-					startSha1 = bra[0];
+			String[] bra = br.split(IGenericConstants.COLON);
+			if (bra.length > 1) {
+				if (patchBranch.equals(bra[0])) {
+					String[] r2sArray = bra[1].split(IGenericConstants.COMMA);
+					for (String r2s : r2sArray) {
+						String[] array = r2s.split(IGenericConstants.WN);
+						if (array.length > 1) {
+							rep2sha1Map.put(array[0], array[1]);
+						}
+					}
 				}
 			}
 		}
-		if (startSha1 == null) {
+		if (rep2sha1Map.size() == 0) {
 			return pluginNames;
 		}
 
@@ -63,8 +71,13 @@ public class SearchPatchPluginsServiceImpl extends MakePatchServiceImpl implemen
 
 		int totalCount = getCount();
 		int unitWeight = totalCount / repSize;
+		String startSha1 = null;
 		for (String rep : gitReps) {
 			monitor.setTaskName("Searching repository: " + rep);
+			startSha1 = rep2sha1Map.get(rep);
+			if (startSha1 == null) {
+				continue;
+			}
 			String url = GithubUtil.getDifferentsOfTwoCommitsURL(rep, startSha1, patchBranch);
 			search(pluginNames, url);
 			monitor.worked(unitWeight);
@@ -72,7 +85,6 @@ public class SearchPatchPluginsServiceImpl extends MakePatchServiceImpl implemen
 
 		// String url =
 		// "https://api.github.com/repos/Talend/tdi-studio-se/compare/dec1792...patch/6.4.1";
-		// String fileNamePattern = "\\w+(\\.\\w+)+";
 
 		return pluginNames;
 	}

@@ -1,6 +1,7 @@
 package com.byc.tools.patch.prefs;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -30,6 +31,18 @@ public class PreferenceUtils {
 			return getArrayByString(grs);
 		}
 		return new String[0];
+	}
+	
+	public static String[] getPatchBranchNames() {
+		List<String> patchBrNames = new ArrayList<>();
+		String[] patchBranches = getPatchBranches();
+		for (String patchBranch : patchBranches) {
+			String[] bra = patchBranch.split(IGenericConstants.COLON);
+			if (bra.length > 1) {
+				patchBrNames.add(bra[0]);
+			}
+		}
+		return patchBrNames.toArray(new String[0]);
 	}
 
 	public static String[] getArrayByString(String stringList) {

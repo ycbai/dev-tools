@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.byc.tools.patch.model.PatchInfo;
+import com.byc.tools.patch.prefs.PreferenceUtils;
 import com.byc.tools.patch.utils.PatchFileUtil;
 
 /**
@@ -112,19 +113,21 @@ public class PatchMainPage extends AbstractMakePatchPage {
 		versionLabel.setLayoutData(new GridData());
 
 		versionText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		GridData versionTextGD = new GridData(GridData.FILL_HORIZONTAL);
-		versionTextGD.horizontalSpan = 2;
-		versionText.setLayoutData(versionTextGD);
+		versionText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		patchBranchLabel = new Label(container, SWT.NONE);
 		patchBranchLabel.setText("Patch Branch");
 		patchBranchLabel.setLayoutData(new GridData());
 
 		patchBranchCombo = new Combo(container, SWT.NONE);
-		GridData patchBranchComboGD = new GridData(GridData.FILL_HORIZONTAL);
-		patchBranchComboGD.horizontalSpan = 2;
-		patchBranchCombo.setLayoutData(patchBranchComboGD);
-		patchBranchCombo.setItems(new String[] { "a", "b", "c" });
+		patchBranchCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		String[] patchBranchNames = PreferenceUtils.getPatchBranchNames();
+		patchBranchCombo.setItems(patchBranchNames);
+		if (patchBranchNames.length > 0) {
+			patchBranchCombo.select(0);
+		}
+		
+		new Label(container, SWT.NONE);
 
 		Label patchPathLabel = new Label(container, SWT.NONE);
 		patchPathLabel.setText("Patch Path");
