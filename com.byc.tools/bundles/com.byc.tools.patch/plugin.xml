@@ -58,5 +58,25 @@
          </toolbar>
       </menuContribution>-->
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.byc.tools.patch.prefs.DevToolsPreferencePage"
+            id="com.byc.tools.patch.prefs.DevToolsPreferencePage"
+            name="Dev Tools">
+      </page>
+      <page
+            category="com.byc.tools.patch.prefs.DevToolsPreferencePage"
+            class="com.byc.tools.patch.prefs.PatchPreferencePage"
+            id="com.byc.tools.patch.prefs.PatchPreferencePage"
+            name="Patch">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.byc.tools.patch.prefs.PatchPreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

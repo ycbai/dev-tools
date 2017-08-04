@@ -8,11 +8,13 @@ import com.byc.tools.patch.log.ExceptionLogger;
 import com.byc.tools.patch.utils.PatchFileUtil;
 
 /**
- * 
+ *
  * @author ycbai
  *
  */
 public class PatchInfo {
+
+	private String patchBranch;
 
 	private String targetPath;
 
@@ -21,6 +23,14 @@ public class PatchInfo {
 	private File pluginsFolder;
 
 	private List<File> jarFiles;
+
+	public String getPatchBranch() {
+		return patchBranch;
+	}
+
+	public void setPatchBranch(String patchBranch) {
+		this.patchBranch = patchBranch;
+	}
 
 	public String getTargetPath() {
 		return targetPath;
@@ -62,8 +72,8 @@ public class PatchInfo {
 
 	@Override
 	public String toString() {
-		return "PatchInfo [targetPath=" + targetPath + ", version=" + version + ", pluginsFolder=" + pluginsFolder
-				+ ", jarFiles=" + jarFiles + "]";
+		return "PatchInfo [patchBranch=" + patchBranch + ", targetPath=" + targetPath + ", version=" + version
+				+ ", pluginsFolder=" + pluginsFolder + "]";
 	}
 
 }

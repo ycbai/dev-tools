@@ -12,15 +12,15 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.Wizard;
 
 import com.byc.tools.patch.PatchPlugin;
+import com.byc.tools.patch.exceptions.PatchException;
 import com.byc.tools.patch.log.ExceptionLogger;
 import com.byc.tools.patch.model.PatchInfo;
-import com.byc.tools.patch.services.ChangeVersionService;
-import com.byc.tools.patch.services.ExportPatchService;
-import com.byc.tools.patch.services.impls.ChangeVersionServiceImpl;
-import com.byc.tools.patch.services.impls.ExportPatchServiceImpl;
+import com.byc.tools.patch.providers.IMakePatchProvider;
+import com.byc.tools.patch.providers.MakeOldPatchProvider;
+import com.byc.tools.patch.providers.MakePatchProvider;
 
 /**
- * 
+ *
  * @author ycbai
  *
  */
@@ -57,14 +57,7 @@ public class MakePatchWizard extends Wizard {
 				public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 					monitor.beginTask("Making patch...", 1000);
 					try {
-						// Change name and version.
-						ChangeVersionService versionService = new ChangeVersionServiceImpl();
-						versionService.setCount(800);
-						versionService.doChangeVersion(patchInfo, monitor);
-						// Export patch
-						ExportPatchService exportService = new ExportPatchServiceImpl();
-						exportService.setCount(150);
-						exportService.doExportPatch(patchInfo, monitor);
+						makePatch(monitor);
 					} catch (Exception ex) {
 						throw new InvocationTargetException(ex);
 					} finally {
@@ -82,6 +75,16 @@ public class MakePatchWizard extends Wizard {
 			return false;
 		}
 		return true;
+	}
+
+	private void makePatch(IProgressMonitor monitor) throws PatchException {
+		IMakePatchProvider patchProvider = null;
+		if (patchMainPage.isNewPatch()) {
+			patchProvider = new MakePatchProvider();
+		} else {
+			patchProvider = new MakeOldPatchProvider();
+		}
+		patchProvider.makePatch(patchInfo, monitor);
 	}
 
 }

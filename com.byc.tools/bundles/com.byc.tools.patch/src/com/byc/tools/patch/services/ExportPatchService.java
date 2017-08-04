@@ -1,12 +1,13 @@
 package com.byc.tools.patch.services;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import com.byc.tools.patch.exceptions.PatchException;
-import com.byc.tools.patch.model.PatchInfo;
 
 public interface ExportPatchService extends MakePatchService {
 
-	boolean doExportPatch(PatchInfo patchInfo, IProgressMonitor monitor) throws PatchException;
+	boolean doExportPatch(File originalPluginsFolder, String targetPath, IProgressMonitor monitor) throws PatchException;
 
 }
