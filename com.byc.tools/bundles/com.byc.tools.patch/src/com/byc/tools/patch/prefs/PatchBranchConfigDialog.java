@@ -55,9 +55,12 @@ public class PatchBranchConfigDialog extends Dialog {
 			if (brca.length > 1) {
 				branchName = brca[0];
 				String brcs = brca[1];
-				String[] rep2sha1Array = brcs.split(IGenericConstants.WN);
-				if (rep2sha1Array.length > 1) {
-					rep2sha1Map.put(rep2sha1Array[0], rep2sha1Array[1]);
+				String[] rep2sha1Array = brcs.split(IGenericConstants.COMMA);
+				for (String rep2sha1 : rep2sha1Array) {
+					String[] r2sArray = rep2sha1.split(IGenericConstants.WN);
+					if (r2sArray.length > 1) {
+						rep2sha1Map.put(r2sArray[0], r2sArray[1]);
+					}
 				}
 			}
 		}
@@ -148,15 +151,17 @@ public class PatchBranchConfigDialog extends Dialog {
 		}
 		Set<Entry<String, String>> rep2sha1EntrySet = rep2sha1Map.entrySet();
 		Iterator<Entry<String, String>> rep2sha1Iterator = rep2sha1EntrySet.iterator();
+		int count = 0;
+		int size = rep2sha1Map.size();
 		while (rep2sha1Iterator.hasNext()) {
 			Entry<String, String> rep2sha1 = rep2sha1Iterator.next();
 			sb.append(rep2sha1.getKey());
 			sb.append(IGenericConstants.WN);
 			sb.append(rep2sha1.getValue());
-			sb.append(IGenericConstants.COMMA);
-		}
-		if (IGenericConstants.COMMA.equals(sb.charAt(sb.length() - 1))) {
-			sb.deleteCharAt(sb.charAt(sb.length() - 1));
+			count++;
+			if (count < size) {
+				sb.append(IGenericConstants.COMMA);
+			}
 		}
 		return sb.toString();
 	}

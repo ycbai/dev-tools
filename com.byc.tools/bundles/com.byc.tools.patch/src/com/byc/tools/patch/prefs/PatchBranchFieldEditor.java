@@ -2,8 +2,6 @@ package com.byc.tools.patch.prefs;
 
 import java.util.List;
 
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -15,7 +13,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-import com.byc.tools.patch.constants.IGenericConstants;
 import com.byc.tools.patch.ui.common.TableEditor;
 
 public class PatchBranchFieldEditor extends TableEditor {

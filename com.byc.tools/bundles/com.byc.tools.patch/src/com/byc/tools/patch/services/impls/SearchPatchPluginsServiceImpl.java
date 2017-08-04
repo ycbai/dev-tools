@@ -27,9 +27,16 @@ import com.byc.tools.patch.utils.GithubUtil;
 
 public class SearchPatchPluginsServiceImpl extends MakePatchServiceImpl implements SearchPatchPluginsService {
 
-	private static String FILE_NAME_PATTERN = "\\w+(\\.\\w+)+";
+	private static String FILE_NAME_PATTERN = "^main\\/plugins\\/(org\\.talend(\\.\\w+)+)\\/.*";
 
 	private static String FILE_NAME_ATTRIBUTE = "files";
+
+	private String authHeader;
+
+	public SearchPatchPluginsServiceImpl() {
+		super();
+		authHeader = GithubUtil.getAuthHeaderString();
+	}
 
 	@Override
 	public Set<String> searchPatchPlugins(String patchBranch, IProgressMonitor monitor) throws PatchException {
@@ -48,12 +55,14 @@ public class SearchPatchPluginsServiceImpl extends MakePatchServiceImpl implemen
 		for (String br : patchBranches) {
 			String[] bra = br.split(IGenericConstants.COLON);
 			if (bra.length > 1) {
-				if (patchBranch.equals(bra[0])) {
-					String[] r2sArray = bra[1].split(IGenericConstants.COMMA);
-					for (String r2s : r2sArray) {
-						String[] array = r2s.split(IGenericConstants.WN);
-						if (array.length > 1) {
-							rep2sha1Map.put(array[0], array[1]);
+				String branchName = bra[0];
+				if (patchBranch.equals(branchName)) {
+					String reps = bra[1];
+					String[] repsArray = reps.split(IGenericConstants.COMMA);
+					for (String rep : repsArray) {
+						String[] r2sArray = rep.split(IGenericConstants.WN);
+						if (r2sArray.length > 1) {
+							rep2sha1Map.put(r2sArray[0], r2sArray[1]);
 						}
 					}
 				}
@@ -83,9 +92,6 @@ public class SearchPatchPluginsServiceImpl extends MakePatchServiceImpl implemen
 			monitor.worked(unitWeight);
 		}
 
-		// String url =
-		// "https://api.github.com/repos/Talend/tdi-studio-se/compare/dec1792...patch/6.4.1";
-
 		return pluginNames;
 	}
 
@@ -93,9 +99,11 @@ public class SearchPatchPluginsServiceImpl extends MakePatchServiceImpl implemen
 		try {
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpGet request = new HttpGet(queryUrl);
-
 			// add request header
 			// request.addHeader("User-Agent", USER_AGENT);
+			if (authHeader != null) {
+				request.addHeader("Authorization", authHeader);
+			}
 			HttpResponse response = client.execute(request);
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 			StringBuffer result = new StringBuffer();
@@ -111,10 +119,9 @@ public class SearchPatchPluginsServiceImpl extends MakePatchServiceImpl implemen
 				for (Object object : filesArray) {
 					JSONObject fileObj = (JSONObject) object;
 					String fileName = (String) fileObj.get("filename");
-					Pattern pattern = Pattern.compile(FILE_NAME_PATTERN);
-					Matcher matcher = pattern.matcher(fileName);
+					Matcher matcher = Pattern.compile(FILE_NAME_PATTERN).matcher(fileName);
 					if (matcher.find()) {
-						fileName = matcher.group();
+						fileName = matcher.group(1);
 						pluginNames.add(fileName);
 						System.out.println(fileName);
 					}

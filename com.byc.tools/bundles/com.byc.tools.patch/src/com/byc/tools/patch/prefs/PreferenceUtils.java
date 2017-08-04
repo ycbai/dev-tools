@@ -11,11 +11,25 @@ import com.byc.tools.patch.constants.IGenericConstants;
 
 public class PreferenceUtils {
 
+	public final static String PREF_KEY_GIT_USER_NAME = "GUN";
+
+	public final static String PREF_KEY_GIT_PASSWORD = "GPWD";
+
 	public final static String PREF_KEY_GIT_REPS = "GRS";
 
 	public final static String PREF_KEY_BRANCHES = "PBS";
 
 	private static IPreferenceStore store = PatchPlugin.getDefault().getPreferenceStore();
+
+	public static String getGitUsername() {
+		String username = store.getString(PREF_KEY_GIT_USER_NAME);
+		return username;
+	}
+
+	public static String getGitPassword() {
+		String password = store.getString(PREF_KEY_GIT_PASSWORD);
+		return password;
+	}
 
 	public static String[] getGitRepsURLs() {
 		String grs = store.getString(PREF_KEY_GIT_REPS);
@@ -32,7 +46,7 @@ public class PreferenceUtils {
 		}
 		return new String[0];
 	}
-	
+
 	public static String[] getPatchBranchNames() {
 		List<String> patchBrNames = new ArrayList<>();
 		String[] patchBranches = getPatchBranches();

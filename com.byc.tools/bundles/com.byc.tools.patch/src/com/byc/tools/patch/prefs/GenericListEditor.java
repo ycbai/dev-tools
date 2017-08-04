@@ -23,8 +23,10 @@ public class GenericListEditor extends ListEditor {
 		StringBuffer path = new StringBuffer("");//$NON-NLS-1$
 
 		for (int i = 0; i < items.length; i++) {
+			if (i > 0) {
+				path.append(IGenericConstants.ROW_SEPARATOR);
+			}
 			path.append(items[i]);
-			path.append(IGenericConstants.ROW_SEPARATOR);
 		}
 		return path.toString();
 	}

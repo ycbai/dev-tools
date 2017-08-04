@@ -25,7 +25,7 @@ public class MakePatchProvider implements IMakePatchProvider {
 		SearchPatchPluginsService  searchPatchPluginsService = new SearchPatchPluginsServiceImpl();
 		searchPatchPluginsService.setCount(400);
 		Set<String> pluginNames = searchPatchPluginsService.searchPatchPlugins(patchInfo.getPatchBranch(), monitor);
-		
+
 		// Create a tmp folder to store patch plugins.
 		File pluginsTmpFolder;
 		try {
@@ -33,15 +33,16 @@ public class MakePatchProvider implements IMakePatchProvider {
 			if (pluginsTmpFolder.exists()) {
 				FileUtils.forceDelete(pluginsTmpFolder);
 			}
+			pluginsTmpFolder.mkdirs();
 		} catch (IOException e) {
 			throw new PatchException(e);
 		}
-		
+
 		// Copy patch plugins to the tmp folder.
 		CopyPatchPluginsService copyPatchPluginsService = new CopyPatchPluginsServiceImpl();
 		copyPatchPluginsService.setCount(400);
 		copyPatchPluginsService.copyPatchPlugins(patchInfo.getPluginsFolder(), pluginNames, pluginsTmpFolder, monitor);
-		
+
 		// Export patch
 		ExportPatchService exportService = new ExportPatchServiceImpl();
 		exportService.setCount(150);

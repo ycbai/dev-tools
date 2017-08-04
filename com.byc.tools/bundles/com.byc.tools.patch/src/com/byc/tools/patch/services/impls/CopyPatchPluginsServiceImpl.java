@@ -26,10 +26,11 @@ public class CopyPatchPluginsServiceImpl extends MakePatchServiceImpl implements
 		int totalCount = getCount();
 		int unitWeight = totalCount / 100;
 		try {
-			File tmpFolder = PatchFileUtil.getTmpFolder("pluginsTmpFolder");
+			File tmpFolder = PatchFileUtil.getTmpFolder("copiedPluginsTmpFolder");
 			if (tmpFolder.exists()) {
 				FileUtils.forceDelete(tmpFolder);
 			}
+			tmpFolder.mkdirs();
 			monitor.worked(unitWeight * 10);
 			monitor.setTaskName("Filter plugins...");
 			File[] filterFiles = pluginsFolder.listFiles(new FileFilter() {
@@ -43,11 +44,12 @@ public class CopyPatchPluginsServiceImpl extends MakePatchServiceImpl implements
 			monitor.worked(unitWeight * 30);
 			monitor.setTaskName("Copy plugins...");
 			for (File file : filterFiles) {
-				FileUtils.copyFileToDirectory(file, tmpFolder, true);
-				File newFile = new File(tmpFolder, file.getName());
-				if (newFile.isDirectory()) {
-					File targetFile = new File(newFile.getAbsolutePath() + IGenericConstants.JAR_SUFFIX);
-					ZipFileUtil.zip(newFile.getAbsolutePath(), targetFile.getAbsolutePath());
+				if (file.isDirectory()) {
+					File newFile = new File(tmpFolder, file.getName());
+					newFile = new File(newFile.getAbsolutePath() + IGenericConstants.JAR_SUFFIX);
+					ZipFileUtil.zip(file.getAbsolutePath(), newFile.getAbsolutePath());
+				} else {
+					FileUtils.copyFileToDirectory(file, tmpFolder, true);
 				}
 			}
 			FileUtils.copyDirectory(tmpFolder, targetFolder);

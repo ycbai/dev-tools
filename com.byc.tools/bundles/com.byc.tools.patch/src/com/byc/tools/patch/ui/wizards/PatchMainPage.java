@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -48,7 +49,7 @@ public class PatchMainPage extends AbstractMakePatchPage {
 
 	private Label patchBranchLabel;
 
-	private Combo patchBranchCombo;
+	private CCombo patchBranchCombo;
 
 	private boolean isNewPatch = true;
 
@@ -85,6 +86,7 @@ public class PatchMainPage extends AbstractMakePatchPage {
 		createPatchPanel(patchContainer);
 
 		addListeners();
+		init();
 		updatePageUI();
 		updatePageStatus();
 
@@ -119,14 +121,10 @@ public class PatchMainPage extends AbstractMakePatchPage {
 		patchBranchLabel.setText("Patch Branch");
 		patchBranchLabel.setLayoutData(new GridData());
 
-		patchBranchCombo = new Combo(container, SWT.NONE);
+		patchBranchCombo = new CCombo(container, SWT.BORDER);
 		patchBranchCombo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		String[] patchBranchNames = PreferenceUtils.getPatchBranchNames();
-		patchBranchCombo.setItems(patchBranchNames);
-		if (patchBranchNames.length > 0) {
-			patchBranchCombo.select(0);
-		}
-		
+		patchBranchCombo.setEditable(false);
+
 		new Label(container, SWT.NONE);
 
 		Label patchPathLabel = new Label(container, SWT.NONE);
@@ -213,9 +211,19 @@ public class PatchMainPage extends AbstractMakePatchPage {
 		});
 	}
 
+	private void init() {
+		String[] patchBranchNames = PreferenceUtils.getPatchBranchNames();
+		patchBranchCombo.setItems(patchBranchNames);
+		if (patchBranchNames.length > 0) {
+			patchBranchCombo.select(0);
+		}
+	}
+
 	private void updateJarFiles(String pluginsPath) {
 		patchInfo.setPluginsFolder(new File(pluginsPath));
-		fillDefaultVersion();
+		if (!isNewPatch) {
+			fillDefaultVersion();
+		}
 	}
 
 	private void updatePageUI() {
@@ -231,7 +239,7 @@ public class PatchMainPage extends AbstractMakePatchPage {
 			setErrorMessage("Plugins Path cannot be null!");
 			return;
 		}
-		if (patchInfo.getJarFiles() == null || patchInfo.getJarFiles().isEmpty()) {
+		if (!isNewPatch && (patchInfo.getJarFiles() == null || patchInfo.getJarFiles().isEmpty())) {
 			setErrorMessage("There is not any plugin in " + pluginsPathText.getText());
 			return;
 		}
